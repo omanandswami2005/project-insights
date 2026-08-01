@@ -4,20 +4,33 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 /** Sticky top bar. Logo left, links + theme toggle right. */
-export default function TopBar({ recap }) {
+export default function TopBar({ recap, onLanguageChange }) {
   const [theme, setTheme] = useState('dark')
+  const [lang, setLang] = useState('en')
 
   useEffect(() => {
     setTheme(document.documentElement.dataset.theme || 'dark')
+    const savedLang = localStorage.getItem('lang') || 'en'
+    setLang(savedLang)
   }, [])
 
-  function toggle() {
+  function toggleTheme() {
     const next = theme === 'dark' ? 'light' : 'dark'
     document.documentElement.dataset.theme = next
     try {
       localStorage.setItem('theme', next)
     } catch {}
     setTheme(next)
+  }
+
+  function handleLangSelect(newLang) {
+    setLang(newLang)
+    try {
+      localStorage.setItem('lang', newLang)
+    } catch {}
+    if (onLanguageChange) {
+      onLanguageChange(newLang)
+    }
   }
 
   return (
@@ -27,9 +40,9 @@ export default function TopBar({ recap }) {
           project-insights
         </Link>
 
-        <div className="flex items-center gap-4 sm:gap-5">
+        <div className="flex items-center gap-3 sm:gap-4">
           {recap ? (
-            <span className="data hidden max-w-[340px] truncate text-[11px] text-muted md:inline">
+            <span className="data hidden max-w-[280px] truncate text-[11px] text-muted md:inline">
               {recap}
             </span>
           ) : null}
@@ -44,8 +57,24 @@ export default function TopBar({ recap }) {
           >
             ↗ git
           </a>
+
+          {/* Language Toggle */}
+          <div className="flex items-center gap-1 border-l border-line pl-3">
+            {['en', 'hi', 'mr'].map((l) => (
+              <button
+                key={l}
+                onClick={() => handleLangSelect(l)}
+                data-active={lang === l}
+                data-agent-id={`topbar.language.${l}`}
+                className="chip text-[10px] px-1.5 py-0.5 uppercase"
+              >
+                {l}
+              </button>
+            ))}
+          </div>
+
           <button
-            onClick={toggle}
+            onClick={toggleTheme}
             className="chip"
             data-agent-id="nav.themeToggle"
             aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
