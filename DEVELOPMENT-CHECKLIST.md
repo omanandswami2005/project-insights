@@ -66,7 +66,7 @@ GitHub repo scaffolding & issue creation (E6 full) · adaptive re-planning · Co
 ## Stack (locked — do not debate at T+0)
 
 Next.js 15 App Router · **plain JavaScript (`.js` / `.jsx`) — no TypeScript** · Tailwind + shadcn/ui · **no database** (in-memory + localStorage) · deploy Vercel.
-Graph: our own SVG force layout (`lib/graph-layout.js`). LLM: **Claude API `claude-opus-5` with structured outputs** (`output_config.format` constrains the model to the contract — no prompt-and-pray JSON). Search: Tavily. Papers: Semantic Scholar (no key). Repos: GitHub REST (no key needed at low volume; a PAT raises the rate limit).
+Graph: our own SVG force layout (`lib/graph-layout.js`). LLM: **NVIDIA NIM `nvidia/nemotron-3-super-120b-a12b`** via OpenAI-compatible `json_schema` structured output (Anthropic kept as standby). Router: `lib/services/llm.js`. Search: Tavily. Papers: Semantic Scholar (no key). Repos: GitHub REST (no key needed at low volume; a PAT raises the rate limit).
 
 > **No database.** Auth, persistence, and user accounts are the classic 2-hour time sink that judges never see. One analysis lives in memory + localStorage. That's it.
 
@@ -74,7 +74,7 @@ Graph: our own SVG force layout (`lib/graph-layout.js`). LLM: **Claude API `clau
 
 ## 🚨 PRE-FLIGHT (T−10, do before the clock starts)
 
-- [x] P-1 `TAVILY_API_KEY` in `.env.local` ✅ — **live search verified working** (22 real sources on the demo idea). `ANTHROPIC_API_KEY` still pending: without it, clustering and planning fall back to fixtures and everything still renders. `GITHUB_TOKEN` optional.
+- [x] P-1 Keys in `.env.local` ✅ — `TAVILY_API_KEY` (live, 23 real sources/run) and `NVIDIA_API_KEY` (live, nemotron-3-super). `ANTHROPIC_API_KEY` present but out of credit — router skips it. `GITHUB_TOKEN` optional.
 - [ ] P-2 Both: `git pull`, `pnpm install`, confirm `pnpm dev` runs and `/`, `/analyze/demo`, `/analyze/demo/plan` all render.
 - [x] P-3 Lanes assigned: **A = Omanand (Brain) · B = Friend (Reach)** ✅
 
@@ -90,7 +90,7 @@ Graph: our own SVG force layout (`lib/graph-layout.js`). LLM: **Claude API `clau
 | **A — Brain** | **Omanand** | `lib/services/**`, `app/api/analyze/**`, `app/api/reality/**` | `lib/bot/**`, `app/api/translate/**`, `components/intake/**`, `app/analyze/[id]/brief/**` |
 | **B — Reach** | **Friend** | `lib/bot/**`, `app/api/bot/**`, `app/api/translate/**`, `lib/history.js`, `components/intake/**`, `app/analyze/[id]/brief/**` | `lib/services/**`, `app/api/analyze/**`, `app/api/reality/**` |
 
-**Why this cut:** Lane A is one cohesive job — Claude calls that return contract-shaped JSON. Same mental mode throughout, and it's the whole product claim. Lane B is five small independent surfaces, none of which depend on the pipeline. Neither lane ever blocks the other.
+**Why this cut:** Lane A is one cohesive job — LLM calls that return contract-shaped JSON. Same mental mode throughout, and it's the whole product claim. Lane B is five small independent surfaces, none of which depend on the pipeline. Neither lane ever blocks the other.
 
 **Shared files — announce, edit, commit immediately:**
 - `components/shell/TopBar.jsx` — B adds the language toggle
@@ -332,6 +332,8 @@ T+110 ───── D: rehearse ───────────────�
 
 Format: `HH:MM · <hash> · <type> · <summary> · <who>`
 
+- `2026-08-01 · —  · feat · LLM provider switched to NVIDIA NIM (nemotron-3-super-120b). Router lib/services/llm.js; Anthropic kept as standby. json_schema over guided_json — guided_json returns hollow objects on this model. · Omanand`
+- `2026-08-01 · —  · fix · Lane A integration — per-analysis evidence ids, evidence-derived fallback clustering, architecture returned with reality, after() for serverless. · Omanand`
 - `2026-08-01 · —  · feat · Lane A shipped — deepsearch (Tavily+S2), live verification (GitHub REST + HEAD), clustering + comparisons, analyze routes, reality+architecture route. Live run: 22 sources, 2 dead / 3 stale caught. · Omanand`
 - `2026-08-01 · —  · feat · design handoff implemented — all 4 routes built from fixtures (landing, live, results, plan) + light/dark theme. Lanes re-cut: A=pipeline, B=agents/i18n/discovery, C=plan/docs/QA. · Claude`
 - `2026-08-01 · —  · docs · requirements audit — added F1-F7 to close 3 missing required outputs, 2 missing capabilities, and raise Layer-2 coverage 4→7. Lanes rebalanced. · Claude`

@@ -229,7 +229,7 @@ export default function PlanView({ analysis }) {
       if (!res.ok) throw new Error('reality failed')
       setReality(await res.json())
     } catch {
-      // Lane C's route may not exist yet — the fixture keeps the flow alive.
+      // Route unreachable or the planner failed — the fixture keeps the flow alive.
       setReality(analysis.reality)
     } finally {
       setBusy(false)
@@ -237,7 +237,9 @@ export default function PlanView({ analysis }) {
   }
 
   return reality ? (
-    <Verdict reality={reality} architecture={analysis.architecture} />
+    // The architecture arrives with the reality response on a live run — the
+    // analysis was fetched before the planner ran, so its copy is empty then.
+    <Verdict reality={reality} architecture={reality.architecture ?? analysis.architecture} />
   ) : (
     <Form onSubmit={submit} busy={busy} />
   )

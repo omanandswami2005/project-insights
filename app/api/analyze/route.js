@@ -6,7 +6,7 @@
  * reports in — so the stages must be marked done as they finish, not at the end.
  */
 
-import { NextResponse } from 'next/server'
+import { NextResponse, after } from 'next/server'
 import { emptyAnalysis } from '@/lib/types'
 import { makeId } from '@/lib/utils'
 import { deepsearch } from '@/lib/services/deepsearch'
@@ -85,8 +85,11 @@ export async function POST(request) {
   const id = makeId('an')
   put({ ...emptyAnalysis(idea, id), status: 'searching' })
 
-  // Detached on purpose — the client polls for progress.
-  runPipeline(id, idea)
+  // Runs after the response is sent, so the client can start polling
+  // immediately. `after()` rather than a bare floating promise: on a
+  // serverless host the function is frozen once the response returns, and a
+  // detached promise would simply never finish.
+  after(runPipeline(id, idea))
 
   return NextResponse.json({ id })
 }
