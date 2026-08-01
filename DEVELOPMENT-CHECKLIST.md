@@ -266,7 +266,7 @@ export {}
 *Five small independent surfaces. None depend on Lane A. Each one closes a stated requirement.*
 
 - [x] B-1 **F1 — Telegram bot** `lib/bot/telegram.js` + `app/api/bot/route.js`. `/analyze <idea>` → replies with the saturation verdict and a link. One reminder command. **Highest-value item in this lane: it is 🤖 AI Agents and required capability R6 in one.** (942bcbe) — 🤖 AI Agents
-- [ ] B-2 **F5 — Export brief** `app/analyze/[id]/brief/page.jsx`: problem validation → research → comparison → architecture → roadmap → stack → resources, in one printable document. Print styles already exist (`.no-print`, `@media print`). **Required output #11.** — *~20 min*
+- [x] B-2 **F5 — Export brief** `app/analyze/[id]/brief/page.jsx`: problem validation → research → comparison → architecture → roadmap → stack → resources, in one printable document. Print styles already exist (`.no-print`, `@media print`). **Required output #11.** (b0907b0)
 - [ ] B-3 **F4 — `app/api/translate/route.js`** + wire the language toggle into `TopBar`. Claude translates human-readable fields to `hi`/`mr`. **Leave URLs, repo names and all mono data untranslated.** — *~18 min* — 🌍 Multilingual
 - [ ] B-4 **F7 — `lib/history.js` + workspace rail** on the landing page: localStorage list of past analyses. **Two Layer 2 components for ~12 minutes, and it's what makes 📊 Personalized Dashboards defensible at all.** — *~12 min* — 📚 Research Workspaces + 📊 Personalized Dashboards
 - [ ] B-5 **F8 — Problem Radar (R1)** `components/intake/ProblemRadar.jsx`: an "I don't have an idea yet" path showing 6 ranked real-world problems. **The brief's first-listed capability, and the only one still uncovered.** Fixture-backed, refreshed by one live search. — *~22 min*
