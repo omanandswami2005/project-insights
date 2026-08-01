@@ -71,34 +71,166 @@ Every competing team will ship these. If any appear, the design has failed:
 
 ---
 
-## 4. Route 1 — Intake `/`
+## 4. Route 1 — Landing `/`
 
-**Job:** get one sentence out of the user in under 10 seconds. This is *not* a landing page. There is no fold, no features section, no footer.
+**Two jobs, in this order:**
+1. Get one sentence out of a student in under 10 seconds.
+2. Convince a judge, in the ~20 seconds before anyone types, that this is not another LLM wrapper.
 
-**Layout:** vertically centred, single column, max-width ~680px.
+Those aren't in conflict — the input *is* the hero. Below it, the page argues the case.
+
+### 4.1 The direction
+
+> **Letterpress on black.** A printed research document, not a SaaS site: warm bone ink on a warm near-black, hairline rules, editorial type, and small precise stamps of colour where something has been *checked*.
+
+**The trap we're avoiding.** Near-black + one bright acid-green accent is the single most common AI-generated design right now. We're on that palette because the verify/stale/dead traffic-light is functionally required. So the discipline is:
+
+- **Lime is never decorative.** It appears only as a verification stamp at small sizes — badges, rules, a checkmark. Never a hero accent, never a glow, never a gradient, never a button fill.
+- **The canvas and ink are warm, not cyber.** `#0C0B0A` and `#F2EFE9`, not blue-blacks and cool greys. This single shift moves the whole page from "terminal" to "printed page."
+- **The hero has no accent colour at all** — it's typography and one live mechanism.
+
+### 4.2 Type
+
+| Role | Face | Notes |
+|---|---|---|
+| **Display** | **Schibsted Grotesk** (600/700) | Editorial authority, sharper and more characterful than the Inter/Geist default. Used *only* for the hero and section headings. |
+| Body / UI | Geist Sans | Already installed. Quiet. |
+| Data | Geist Mono | Every score, count, URL, timestamp, star count. The identity rule from §2. |
+
+**Scale:** hero `clamp(44px, 7vw, 88px)`, tracking `-0.035em`, leading `0.98`. Section headings 32px. Body 16px/1.6. Data 13px. Eyebrows 11px mono, uppercase, `0.14em` tracking.
+
+### 4.3 The signature element
+
+**The headline's highlighted word is *stamped*, not coloured.**
+
+The one word that carries the argument gets set in mono, boxed in a hairline, and marked with a verification tick and a live timestamp — exactly the treatment a verified resource gets everywhere else in the product. The page's boldest moment is the product's own mechanism applied to its own headline.
+
+Underneath the input, a **live verification ticker** runs: real repo names being checked, stamped `VERIFIED` / `STALE` / `DEAD`, one every ~1.4s. Not a loop of fake data — it pulls from `DEMO_EVIDENCE` in `lib/fixtures.js`, so what a visitor sees is what the product actually returns.
+
+> This is the aesthetic risk, and the justification is simple: every competitor will *describe* their product in the hero. Ours **performs** it before you've typed anything.
+
+### 4.4 Hero
 
 ```
-        project-insights                          [ mono, small, top-left, muted ]
-
-        What do you want to build?                [ sans, 40px, tight ]
-
-        ┌────────────────────────────────────────────────┐
-        │  Build an AI solution to reduce food waste …   │  ← single-line growing textarea
-        │                                          [ → ] │     autofocus, Enter submits
-        └────────────────────────────────────────────────┘
-
-        Try:  ⟨ hostel food waste ⟩  ⟨ campus lost-and-found ⟩       [ mono chips ]
-              ⟨ crop disease detection ⟩
-
-        ── verified against live sources · nothing recalled from memory ──
-                                                     [ mono, 12px, muted, centred ]
+┌──────────────────────────────────────────────────────────────────────────┐
+│  project-insights                                    how it works   ↗ git │  ← 11px mono
+│                                                                          │
+│                                                                          │
+│   Stop building                                                          │  ← Schibsted
+│   what already ┌─────────┐                                               │    Grotesk 700
+│                │ exists ✓│  ← mono, hairline box, lime tick              │    88px
+│                └─────────┘     "checked 0.4s ago" beneath in 10px mono   │
+│                                                                          │
+│   Type one idea. Get back what's already been built, where the real gap  │  ← 18px, muted
+│   is, and a plan sized to the weeks you actually have.                   │    max-width 46ch
+│                                                                          │
+│   ┌──────────────────────────────────────────────────────────────────┐   │
+│   │  Build an AI solution to reduce food waste in college hostels    │   │  ← autofocus
+│   │                                                          [  → ]  │   │    Enter submits
+│   └──────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│   ⟨ hostel food waste ⟩  ⟨ campus lost-and-found ⟩  ⟨ crop disease ⟩     │  ← mono chips
+│                                                                          │
+│  ────────────────────────────────────────────────────────────────────    │
+│   NOW CHECKING   ultralytics/ultralytics    ✓ VERIFIED   44,120★  4d     │  ← the ticker
+│                                                                          │
+└──────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Details**
-- Input has a 1px border that lifts to `#3A3A40` on focus. No glow, no gradient ring.
-- Example chips fill the input on click (don't auto-submit — let them see it land).
-- The bottom line is the entire pitch. Keep it small and confident; do not make it a badge.
-- **Empty state is the whole page.** Nothing below the fold. Resist adding anything.
+**Copy — use this exactly.**
+- Headline: **Stop building what already `exists`.**
+- Sub: *Type one idea. Get back what's already been built, where the real gap is, and a plan sized to the weeks you actually have.*
+- Under the input, 12px mono muted: `every repo · dataset · paper checked live — nothing recalled from memory`
+
+**Behaviour**
+- Input autofocuses. Enter submits; Shift+Enter newlines. Grows to 3 lines max.
+- Chips fill the input, never auto-submit — let them watch it land.
+- Border `#232327` → `#3A3A40` on focus. **No glow, no gradient ring.**
+- The arrow button is neutral `#232327`, not lime. Nothing on this page competes with a verification stamp.
+
+**Page-load sequence** (one orchestrated moment, ~1.1s total, then still):
+1. Headline lines rise 12px + fade, 60ms stagger.
+2. The stamp box draws around `exists`, tick appears, timestamp counts up from `0.0s`.
+3. Input border fades in; ticker starts.
+
+`@media (prefers-reduced-motion: reduce)` → everything renders in final state, ticker swaps items without animation.
+
+### 4.5 Section — the kill shot *(immediately after the hero)*
+
+The one section that wins the pitch. Two panels, side by side, same question asked of both.
+
+```
+   THE DIFFERENCE                                              ← eyebrow, mono
+
+   ┌─── A typical AI answer ──────────┐  ┌─── project-insights ──────────────┐
+   │                                  │  │                                   │
+   │  "Check out                      │  │  ✅ VERIFIED        checked 4s ago │
+   │   github.com/foodwaste-predictor │  │  ultralytics/ultralytics          │
+   │   — a great starting point!"     │  │  ★ 44,120 · AGPL-3.0 · pushed 4d  │
+   │                                  │  │                                   │
+   │  ┌────────────────────────────┐  │  │  ❌ DEAD            checked 4s ago │
+   │  │ ❌ archived since 2022-01  │  │  │  foodwaste-predictor              │
+   │  │    12 ★ · no license       │  │  │  archived 2022-01 — excluded      │
+   │  └────────────────────────────┘  │  │                                   │
+   │                                  │  │  We show what we rejected.        │
+   │  It cannot know. It never looked.│  │  That's the point.                │
+   └──────────────────────────────────┘  └───────────────────────────────────┘
+        muted, 1px border, 60% opacity        full contrast, lime left border
+```
+
+The left panel is deliberately dimmer. Don't caricature it — a real, plausible AI answer with a real dead repo is more damning than a strawman.
+
+### 4.6 Section — what you get
+
+The 11 outputs the product returns, as a two-column checklist with lime ticks. Doubles as the judge's requirement checklist, so **keep all eleven and keep the wording close to the brief**:
+
+`Problem validation · Market & literature research · Existing solution comparison · Innovation opportunities · Project architecture · Development roadmap · Recommended tech stack · GitHub repositories · APIs & datasets · Implementation timeline · Presentation-ready documentation`
+
+Above it, a single mono line: `from one sentence, in under five minutes`.
+
+### 4.7 Section — how it works
+
+Three steps, numbered — **numbering is earned here because it is a real sequence**, each stage consuming the last.
+
+```
+   01  DISCOVER   Search across papers, repos, datasets, forums — and verify every
+                  result is alive before it reaches you.
+
+   02  VALIDATE   Cluster what exists, score how crowded it is, and name the gap
+                  nobody has covered.
+
+   03  EXECUTE    Size the plan to your team, your weeks, your budget. Ship a
+                  vertical slice in 48 hours.
+```
+
+Hairline rule between each. Number in mono at 32px, muted. No icons.
+
+### 4.8 Section — the honesty panel
+
+The section nobody else will have, and the reason to trust the rest.
+
+> **What we could not verify.**
+> Every report ends with an explicit list of claims we could not confirm — unpriced products, single-source statistics, endpoints we could not reach. It is never empty, and it is never hidden.
+
+Render a real example from `DEMO_ANALYSIS.unverified`. Muted border, **no red** — this is disclosure, not warning.
+
+### 4.9 Section — capabilities *(judge-facing)*
+
+A quiet 4×2 grid of the eight iNSIGHTS Layer 2 components, with the seven we implement marked by a lime hairline and a tick, and the unimplemented one left plainly greyed. **Don't dress it up and don't hide the gap** — showing 7/8 honestly reads stronger than claiming 8/8.
+
+### 4.10 Footer
+
+One line, mono, muted: `project-insights · built for the iNSIGHTS track` + a repo link. Nothing else. No newsletter, no social row, no second CTA.
+
+### 4.11 Rules for this page
+
+- **One accent moment only.** The stamped word in the hero. Everything below is type, hairlines, and small status marks.
+- **No card grid with icons.** Sections are separated by hairline rules and space, not by boxes.
+- **No second "Get Started" button.** The input is the only call to action on the page.
+- **Every number on the page is real** — pulled from `lib/fixtures.js`. No invented "10,000+ students" stats. Fabricated social proof is the fastest way to lose a technical judge.
+- Responsive: hero clamps down, kill-shot panels stack (ours **first** on mobile), how-it-works becomes a single column.
+
+> ⏱️ **Cost warning.** This is ~30 minutes of work and Lane B's budget is 68 minutes for intake + live view + graph canvas. **Build this page with Claude Design before T+0** — it needs no data wiring beyond `fixtures.js`, so it's the most parallelisable piece in the whole project. If it isn't ready when the clock starts, ship §4.4 alone and add §4.5–4.10 in Wave 2.
 
 ---
 
@@ -271,6 +403,6 @@ Build in this order. Cut from the bottom.
 3. **Live Analysis view** — sells that real work is happening
 4. **Saturation + white space** — the moat, stated
 5. **Reality Check verdict** — the unique second act
-6. **Intake** — needs to be clean, not remarkable
+6. **Landing hero (§4.4)** — the input and the stamped headline. The lower sections (§4.5–4.10) are polish; the hero is not.
 7. Evidence Ledger detail polish
 8. Light mode, exports, print styles — **do not build these**

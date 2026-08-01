@@ -9,21 +9,26 @@
   the whole visual signature — keep it.
 */
 @theme {
-  --color-canvas: #0a0a0b;
-  --color-surface: #141416;
-  --color-surface-2: #1b1b1e;
-  --color-line: #232327;
-  --color-line-bright: #3a3a40;
+  /* Warm near-black and bone ink — "letterpress on black", not cyber terminal.
+     The warmth is deliberate: it is what keeps this off the generic
+     near-black + acid-green look. See docs/UI-SPEC.md §4.1. */
+  --color-canvas: #0c0b0a;
+  --color-surface: #151412;
+  --color-surface-2: #1c1a18;
+  --color-line: #262421;
+  --color-line-bright: #3d3a35;
 
-  --color-ink: #ededef;
-  --color-muted: #8a8a93;
+  --color-ink: #f2efe9;
+  --color-muted: #8d8880;
 
   /* Status is the brand. There is deliberately no other accent colour —
-     anything else would compete with the only hues that carry meaning. */
+     anything else would compete with the only hues that carry meaning.
+     Lime is NEVER decorative: no glows, no gradients, no button fills. */
   --color-verified: #7be04a;
   --color-stale: #e0a93a;
   --color-dead: #e5484d;
 
+  --font-display: var(--font-schibsted), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, 'SF Mono', monospace;
 
@@ -43,11 +48,18 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Headings run tight; body runs open. */
+  /* Display face for headings only — used with restraint. Body stays Geist. */
   h1,
   h2,
   h3 {
-    letter-spacing: -0.02em;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  h1 {
+    letter-spacing: -0.035em;
+    line-height: 0.98;
   }
 
   p {
@@ -97,6 +109,51 @@
   .data {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Eyebrow label above a section. */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  /* THE SIGNATURE (docs/UI-SPEC.md §4.3) — the hero's highlighted word is
+     stamped exactly like a verified resource, not merely coloured. */
+  .stamp {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.06em 0.3em;
+    border: 1px solid var(--color-verified);
+    border-radius: var(--radius-control);
+    letter-spacing: -0.01em;
+  }
+}
+
+/* One orchestrated page-load moment, then stillness. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

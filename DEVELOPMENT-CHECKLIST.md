@@ -245,7 +245,7 @@ Do these in one room, one screen if needed. Nothing else starts until W0-2 lands
 
 *Follow [docs/UI-SPEC.md](docs/UI-SPEC.md) — it has the layouts, palette, and the anti-slop rules.*
 
-- [ ] B-1 Landing + idea intake per [UI-SPEC §4](docs/UI-SPEC.md). One input, 3 example chips, submit → `POST /api/analyze` → route to `/analyze/[id]`. **Resist building a marketing page.** — *~10 min*
+- [ ] B-1 Landing page per [UI-SPEC §4](docs/UI-SPEC.md) — hero with the stamped word, input, chips, verification ticker, plus the kill-shot / outputs / how-it-works / honesty / capabilities sections. Submit → `POST /api/analyze` → route to `/analyze/[id]`. **Get this from Claude Design before T+0** — it needs no data wiring beyond fixtures, so it's the most parallelisable piece we have. If it isn't ready, ship §4.4 (hero only, ~10 min) and add the rest in Wave 2. — *~30 min, or ~10 if pre-built*
 - [ ] B-2 Live analysis view per [UI-SPEC §5](docs/UI-SPEC.md): poll every 800ms, render `progress[]` as agents checking in, plus the "just verified" feed. **Never a bare spinner.** — *~15 min*
 - [ ] B-3 **`components/graph/Canvas.jsx` — the hero** ([UI-SPEC §6.1](docs/UI-SPEC.md)). ⏱️ **HARD STOP at 25 min** — if it's fighting you, ship the static clustered layout and move on. — *~25 min*
 - [ ] B-4 **F4 UI — language toggle** (EN / हिंदी / मराठी) in the header, calls `/api/translate`, swaps the rendered strings. — *~5 min* — 🌍 Multilingual
