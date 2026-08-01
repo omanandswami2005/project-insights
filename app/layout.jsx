@@ -22,7 +22,17 @@ export default function RootLayout({ children }) {
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${schibsted.variable}`}
+      data-theme="dark"
+      suppressHydrationWarning
     >
+      <head>
+        {/* Set the theme before first paint so there is no flash. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="min-h-screen bg-canvas text-ink antialiased">{children}</body>
     </html>
   )

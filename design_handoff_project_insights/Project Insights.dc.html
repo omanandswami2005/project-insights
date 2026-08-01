@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600;700&family=Schibsted+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    @keyframes ip-fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes ip-slideIn { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes ip-spin { to { transform: rotate(360deg); } }
+    body { margin: 0; }
+  </style>
+</helmet>
+
+<div style="{{ rootStyle }}">
+
+  <!-- top bar -->
+  <div style="{{ topBarStyle }}">
+    <div style="display:flex;align-items:center;gap:10px;cursor:pointer" onClick="{{ goLanding }}" data-agent-id="nav.home">
+      <span style="{{ monoStyle }};font-size:13px;font-weight:600;letter-spacing:0.02em">project-insights</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:22px">
+      <sc-if value="{{ showIdeaRecap }}">
+        <span style="{{ monoMutedStyle }};font-size:11px;max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ idea }}</span>
+      </sc-if>
+      <a href="#" style="{{ monoMutedStyle }};font-size:11px;text-decoration:none">how it works</a>
+      <a href="#" style="{{ monoMutedStyle }};font-size:11px;text-decoration:none">↗ git</a>
+      <button onClick="{{ toggleDark }}" style="{{ darkToggleStyle }}" data-agent-id="nav.themeToggle">{{ darkToggleLabel }}</button>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN: LANDING ============ -->
+  <sc-if value="{{ isLanding }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Landing">
+      <!-- hero -->
+      <div style="{{ heroWrapStyle }}">
+        <h1 style="{{ headlineStyle }}">
+          Stop building<br/>
+          what already <span style="{{ stampBoxStyle }}">exists <span style="{{ stampTickStyle }}">✓</span></span>
+        </h1>
+        <div style="{{ monoMutedStyle }};font-size:10px;margin-top:6px">checked {{ stampSeconds }}s ago</div>
+
+        <p style="{{ subheadStyle }}">Type one idea. Get back what's already been built, where the real gap is, and a plan sized to the weeks you actually have.</p>
+
+        <form onSubmit="{{ handleSubmit }}" style="margin-top:28px;max-width:680px">
+          <div style="{{ inputRowStyle }}">
+            <textarea
+              autofocus="true"
+              value="{{ idea }}"
+              onChange="{{ handleIdeaChange }}"
+              onKeyDown="{{ handleIdeaKeyDown }}"
+              placeholder="Build an AI solution to reduce food waste in college hostels"
+              rows="1"
+              data-agent-id="intake.input"
+              style="{{ ideaTextareaStyle }}"
+            ></textarea>
+            <button type="submit" style="{{ arrowButtonStyle }}" data-agent-id="intake.submit">→</button>
+          </div>
+          <div style="{{ monoMutedStyle }};font-size:11px;margin-top:10px">every repo · dataset · paper checked live — nothing recalled from memory</div>
+        </form>
+
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:18px">
+          <sc-for list="{{ exampleIdeas }}" as="ex" hint-placeholder-count="3">
+            <button onClick="{{ pickExample }}" data-idea="{{ ex }}" style="{{ chipStyle }}" data-agent-id="intake.example">⟨ {{ ex }} ⟩</button>
+          </sc-for>
+        </div>
+
+        <div style="{{ hrStyle }};margin-top:34px"></div>
+
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 0;flex-wrap:wrap">
+          <span style="{{ monoMutedStyle }};font-size:11px;text-transform:uppercase;letter-spacing:0.1em">now checking</span>
+          <span style="{{ monoStyle }};font-size:13px">{{ tickerItem.title }}</span>
+          <span style="{{ tickerBadgeStyle }}">{{ tickerVerifyLabel }}</span>
+          <sc-if value="{{ tickerItem.stars }}">
+            <span style="{{ monoMutedStyle }};font-size:11px">{{ tickerStarsLabel }}★</span>
+          </sc-if>
+        </div>
+      </div>
+
+      <!-- kill shot -->
+      <div style="{{ sectionWrapStyle }}">
+        <div style="{{ eyebrowStyle }}">the difference</div>
+        <div style="{{ killShotGridStyle }}">
+          <div style="{{ killShotDimPanelStyle }}">
+            <div style="{{ monoMutedStyle }};font-size:11px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px">a typical ai answer</div>
+            <p style="{{ bodyMutedStyle }};font-style:italic">"Check out github.com/foodwaste-predictor — a great starting point!"</p>
+            <div style="{{ deadCalloutStyle }}">
+              <div style="{{ monoStyle }};font-size:12px;color:{{ colors.dead }}">❌ archived since 2022-01</div>
+              <div style="{{ monoMutedStyle }};font-size:11px;margin-top:4px">12 ★ · no license</div>
+            </div>
+            <p style="{{ bodyMutedStyle }};margin-top:16px">It cannot know. It never looked.</p>
+          </div>
+          <div style="{{ killShotBrightPanelStyle }}">
+            <div style="display:flex;justify-content:space-between;align-items:baseline">
+              <span style="{{ monoStyle }};font-size:12px;color:{{ colors.verified }};font-weight:600">✅ VERIFIED</span>
+              <span style="{{ monoMutedStyle }};font-size:10px">checked 4s ago</span>
+            </div>
+            <div style="{{ monoStyle }};font-size:15px;margin-top:8px">ultralytics/ultralytics</div>
+            <div style="{{ monoMutedStyle }};font-size:11px;margin-top:4px">★ 44,120 · AGPL-3.0 · pushed 4d</div>
+            <div style="{{ hrStyle }};margin:16px 0"></div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline">
+              <span style="{{ monoStyle }};font-size:12px;color:{{ colors.dead }};font-weight:600">❌ DEAD</span>
+              <span style="{{ monoMutedStyle }};font-size:10px">checked 4s ago</span>
+            </div>
+            <div style="{{ monoStyle }};font-size:15px;margin-top:8px">foodwaste-predictor</div>
+            <div style="{{ monoMutedStyle }};font-size:11px;margin-top:4px">archived 2022-01 — excluded</div>
+            <p style="{{ bodyStyle }};margin-top:16px;font-weight:600">We show what we rejected. That's the point.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- what you get -->
+      <div style="{{ sectionWrapStyle }}">
+        <div style="{{ monoMutedStyle }};font-size:12px;margin-bottom:18px">from one sentence, in under five minutes</div>
+        <div style="{{ outputsGridStyle }}">
+          <sc-for list="{{ outputs }}" as="o" hint-placeholder-count="11">
+            <div style="display:flex;align-items:baseline;gap:10px;padding:9px 0">
+              <span style="color:{{ colors.verified }};font-size:13px">✓</span>
+              <span style="{{ bodyStyle }};font-size:15px">{{ o }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- how it works -->
+      <div style="{{ sectionWrapStyle }}">
+        <div style="{{ eyebrowStyle }}">how it works</div>
+        <div>
+          <div style="{{ stepRowStyle }}">
+            <div style="{{ stepNumStyle }}">01</div>
+            <div>
+              <div style="{{ stepLabelStyle }}">DISCOVER</div>
+              <p style="{{ bodyStyle }}">Search across papers, repos, datasets, forums — and verify every result is alive before it reaches you.</p>
+            </div>
+          </div>
+          <div style="{{ hrStyle }}"></div>
+          <div style="{{ stepRowStyle }}">
+            <div style="{{ stepNumStyle }}">02</div>
+            <div>
+              <div style="{{ stepLabelStyle }}">VALIDATE</div>
+              <p style="{{ bodyStyle }}">Cluster what exists, score how crowded it is, and name the gap nobody has covered.</p>
+            </div>
+          </div>
+          <div style="{{ hrStyle }}"></div>
+          <div style="{{ stepRowStyle }}">
+            <div style="{{ stepNumStyle }}">03</div>
+            <div>
+              <div style="{{ stepLabelStyle }}">EXECUTE</div>
+              <p style="{{ bodyStyle }}">Size the plan to your team, your weeks, your budget. Ship a vertical slice in 48 hours.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- honesty panel -->
+      <div style="{{ sectionWrapStyle }}">
+        <div style="{{ honestyPanelStyle }}">
+          <div style="{{ stepLabelStyle }};margin-bottom:8px">what we could not verify</div>
+          <p style="{{ bodyStyle }}">Every report ends with an explicit list of claims we could not confirm — unpriced products, single-source statistics, endpoints we could not reach. It is never empty, and it is never hidden.</p>
+          <div style="{{ hrStyle }}"></div>
+          <p style="{{ bodyMutedStyle }};font-size:14px">{{ firstUnverified }}</p>
+        </div>
+      </div>
+
+      <!-- capabilities -->
+      <div style="{{ sectionWrapStyle }}">
+        <div style="{{ eyebrowStyle }}">capabilities</div>
+        <div style="{{ capGridStyle }}">
+          <sc-for list="{{ capabilities }}" as="cap" hint-placeholder-count="8">
+            <div style="{{ capItemStyle_fn }}">
+              <span style="{{ capGlyphStyle_fn }}">{{ cap.glyph }}</span>
+              <span style="{{ monoStyle }};font-size:13px;opacity:{{ cap.opacity }}">{{ cap.name }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="{{ footerStyle }}">project-insights · built for the iNSIGHTS track · <a href="#" style="color:{{ colors.accent }}">repo ↗</a></div>
+    </div>
+  </sc-if>
+
+  <!-- ============ SCREEN: LIVE ANALYSIS ============ -->
+  <sc-if value="{{ isLive }}" hint-placeholder-val="{{ false }}">
+    <div style="{{ sectionWrapStyle }}" data-screen-label="Live Analysis">
+      <div style="{{ ideaQuoteStyle }}">"{{ idea }}"</div>
+      <div style="{{ hrStyle }};margin:18px 0"></div>
+
+      <div style="{{ progressListStyle }}">
+        <sc-for list="{{ progressRows }}" as="row" hint-placeholder-count="5">
+          <div style="{{ row.rowStyle }}">
+            <span style="{{ row.glyphStyle }}">{{ row.glyph }}</span>
+            <span style="{{ row.labelStyle }}">{{ row.step }}</span>
+            <span style="{{ bodyMutedStyle }};font-size:13px;flex:1">{{ row.label }}</span>
+            <span style="{{ monoMutedStyle }};font-size:12px">{{ row.elapsed }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="{{ graphAssemblingBoxStyle }}">
+        <div style="{{ monoMutedStyle }};font-size:12px">graph assembling — {{ liveNodeCount }} / {{ totalNodeCount }} nodes</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;justify-content:center;max-width:520px">
+          <sc-for list="{{ liveVisibleNodes }}" as="n" hint-placeholder-count="6">
+            <span style="{{ n.chipStyle }}">{{ n.label }}</span>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="{{ monoMutedStyle }};font-size:11px;text-transform:uppercase;letter-spacing:0.1em;margin:26px 0 12px">just verified</div>
+      <div style="{{ hrStyle }};margin-bottom:14px"></div>
+      <div>
+        <sc-for list="{{ liveFeed }}" as="item" hint-placeholder-count="4">
+          <div style="{{ item.feedRowStyle }}">
+            <span style="{{ item.glyphColorStyle }}">{{ item.glyph }}</span>
+            <span style="{{ monoStyle }};font-size:13px;flex:1">{{ item.title }}</span>
+            <span style="{{ item.statusColorStyle }}">{{ item.verifyLabel }}</span>
+            <sc-if value="{{ item.stars }}"><span style="{{ monoMutedStyle }};font-size:12px">{{ item.starsLabel }}★</span></sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ SCREEN: RESULTS ============ -->
+  <sc-if value="{{ isResults }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Results">
+      <div style="{{ resultsGridStyle }}">
+        <!-- graph pane -->
+        <div style="{{ graphPaneStyle }}">
+          <svg ref="{{ svgRef }}" viewBox="0 0 760 480" style="{{ svgStyle }}">
+            <sc-for list="{{ renderEdges }}" as="e" hint-placeholder-count="16">
+              <line x1="{{ e.x1 }}" y1="{{ e.y1 }}" x2="{{ e.x2 }}" y2="{{ e.y2 }}" style="{{ e.lineStyle }}"></line>
+            </sc-for>
+            <sc-for list="{{ renderNodes }}" as="n" hint-placeholder-count="18">
+              <g onMouseDown="{{ n.onMouseDown }}" onClick="{{ n.onClick }}" style="cursor:pointer" data-agent-id="graph.node">
+                <circle cx="{{ n.x }}" cy="{{ n.y }}" r="{{ n.r }}" style="{{ n.circleStyle }}"></circle>
+                <sc-if value="{{ n.showLabel }}">
+                  <text x="{{ n.labelX }}" y="{{ n.labelY }}" style="{{ n.textStyle }}">{{ n.label }}</text>
+                </sc-if>
+              </g>
+            </sc-for>
+          </svg>
+          <div style="{{ monoMutedStyle }};font-size:10px;padding:8px 14px">drag nodes · click to inspect evidence</div>
+        </div>
+
+        <!-- insight rail -->
+        <div style="{{ railStyle }}">
+          <!-- verdict -->
+          <div style="{{ cardStyle }}">
+            <div style="{{ monoMutedStyle }};font-size:11px;text-transform:uppercase;letter-spacing:0.1em">saturation</div>
+            <div style="display:flex;align-items:baseline;gap:12px;margin-top:6px">
+              <span style="{{ monoStyle }};font-size:56px;font-weight:600;color:{{ satColor }}">{{ novelty.saturationScore }}</span>
+              <span style="{{ bodyMutedStyle }}">crowded</span>
+            </div>
+            <div style="{{ barTrackStyle }}"><div style="{{ satBarFillStyle }}"></div></div>
+            <p style="{{ bodyStyle }};margin-top:14px;font-size:14px">{{ novelty.verdict }}</p>
+          </div>
+
+          <div style="{{ cardStyle }}">
+            <div style="{{ monoMutedStyle }};font-size:11px;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px">approach clusters</div>
+            <sc-for list="{{ novelty.clusters }}" as="cl" hint-placeholder-count="4">
+              <div onClick="{{ selectCluster }}" data-cluster="{{ cl.id }}" style="margin-bottom:12px;cursor:pointer">
+                <div style="display:flex;justify-content:space-between"><span style="{{ bodyStyle }};font-size:14px">{{ cl.name }}</span><span style="{{ monoMutedStyle }};font-size:12px">{{ cl.size }}</span></div>
+                <div style="{{ barTrackStyle }};height:5px;margin-top:5px"><div style="{{ cl.barStyle }}"></div></div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="{{ whiteSpaceCardStyle }}">
+            <div style="{{ monoStyle }};font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:{{ colors.accent }}">🎯 white space</div>
+            <sc-for list="{{ novelty.whiteSpace }}" as="ws" hint-placeholder-count="3">
+              <div style="{{ whiteSpaceItemStyle }}">
+                <span style="{{ hollowRingStyle }}"></span>
+                <p style="{{ bodyStyle }};font-size:14px;margin:0">{{ ws }}</p>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="{{ cardStyle }}">
+            <div style="{{ monoMutedStyle }};font-size:11px;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px">evidence ledger{{ selectedNodeSuffix }}</div>
+            <sc-for list="{{ evidenceLedgerRows }}" as="ev" hint-placeholder-count="4">
+              <div style="{{ ledgerRowStyle }}">
+                <span style="{{ ev.glyphColorStyle }}">{{ ev.glyph }}</span>
+                <div style="flex:1">
+                  <div style="{{ bodyStyle }};font-size:14px">{{ ev.title }}</div>
+                  <div style="{{ monoMutedStyle }};font-size:11px;margin-top:2px">{{ ev.metaLine }}</div>
+                  <div style="{{ barTrackStyle }};height:4px;margin-top:6px;max-width:140px"><div style="{{ ev.confBarStyle }}"></div></div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="{{ unverifiedPanelStyle }}">
+            <div style="{{ monoMutedStyle }};font-size:11px;text-transform:uppercase;letter-spacing:0.1em">⚠ what i could not verify</div>
+            <sc-for list="{{ analysis.unverified }}" as="u" hint-placeholder-count="3">
+              <p style="{{ bodyMutedStyle }};font-size:13px;margin-top:10px">{{ u }}</p>
+            </sc-for>
+          </div>
+
+          <button onClick="{{ goPlan }}" style="{{ primaryBtnStyle }}" data-agent-id="results.checkBuildability">Check what I can actually build →</button>
+        </div>
+      </div>
+
+      <!-- vault -->
+      <div style="{{ sectionWrapStyle }}">
+        <div style="{{ eyebrowStyle }}">resource vault</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:18px">
+          <sc-for list="{{ vaultFilters }}" as="f" hint-placeholder-count="5">
+            <button onClick="{{ setVaultFilter }}" data-filter="{{ f.id }}" style="{{ f.chipStyle }}" data-agent-id="vault.filter">{{ f.label }}</button>
+          </sc-for>
+          <button onClick="{{ toggleVerifiedOnly }}" style="{{ verifiedOnlyStyle }}" data-agent-id="vault.verifiedOnly">verified only</button>
+        </div>
+        <div style="{{ vaultGridStyle }}">
+          <sc-for list="{{ vaultItems }}" as="v" hint-placeholder-count="6">
+            <div style="{{ v.cardStyle }}">
+              <div style="display:flex;justify-content:space-between;align-items:baseline">
+                <span style="{{ v.statusColorStyle }}">{{ v.glyph }} {{ v.verifyLabel }}</span>
+                <span style="{{ monoMutedStyle }};font-size:10px">checked {{ v.checkedSecs }}s ago</span>
+              </div>
+              <div style="{{ v.titleStyle }}">{{ v.title }}</div>
+              <div style="{{ monoMutedStyle }};font-size:12px;margin-top:4px">{{ v.subtitle }}</div>
+              <div style="{{ monoMutedStyle }};font-size:12px;margin-top:10px">{{ v.metaLine }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ SCREEN: PLAN FORM ============ -->
+  <sc-if value="{{ isPlanForm }}" hint-placeholder-val="{{ false }}">
+    <div style="{{ planFormWrapStyle }}" data-screen-label="Reality Check Form">
+      <div style="{{ eyebrowStyle }}">reality check</div>
+      <h2 style="{{ planTitleStyle }}">Size this to what you can actually ship.</h2>
+
+      <div style="margin-top:24px">
+        <div style="{{ fieldLabelStyle }}">team size</div>
+        <div style="display:flex;align-items:center;gap:16px">
+          <button onClick="{{ teamDec }}" style="{{ stepperBtnStyle }}">−</button>
+          <span style="{{ monoStyle }};font-size:20px;min-width:20px;text-align:center">{{ planTeam }}</span>
+          <button onClick="{{ teamInc }}" style="{{ stepperBtnStyle }}">+</button>
+        </div>
+      </div>
+
+      <div style="margin-top:24px">
+        <div style="{{ fieldLabelStyle }}">weeks available</div>
+        <input type="range" min="1" max="16" value="{{ planWeeks }}" onChange="{{ handleWeeksChange }}" style="{{ sliderStyle }}" data-agent-id="plan.weeks"/>
+        <div style="{{ monoStyle }};font-size:14px;margin-top:4px">{{ planWeeks }} weeks</div>
+      </div>
+
+      <div style="margin-top:24px">
+        <div style="{{ fieldLabelStyle }}">skills</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <sc-for list="{{ skillOptions }}" as="sk" hint-placeholder-count="6">
+            <button onClick="{{ toggleSkill }}" data-skill="{{ sk.id }}" style="{{ sk.style }}" data-agent-id="plan.skill">{{ sk.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="margin-top:24px">
+        <div style="{{ fieldLabelStyle }}">budget</div>
+        <div style="display:flex;gap:0;{{ segWrapExtra }}">
+          <sc-for list="{{ budgetOptions }}" as="b" hint-placeholder-count="3">
+            <button onClick="{{ setBudget }}" data-budget="{{ b.id }}" style="{{ b.segStyle }}" data-agent-id="plan.budget">{{ b.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+
+      <button onClick="{{ goPlanResult }}" style="{{ primaryBtnStyle }};margin-top:34px" data-agent-id="plan.submit">Check what I can actually build</button>
+    </div>
+  </sc-if>
+
+  <!-- ============ SCREEN: PLAN RESULT ============ -->
+  <sc-if value="{{ isPlanResult }}" hint-placeholder-val="{{ false }}">
+    <div style="{{ sectionWrapStyle }}" data-screen-label="Reality Check Result">
+      <div style="{{ monoMutedStyle }};font-size:12px;text-transform:uppercase;letter-spacing:0.1em">buildability</div>
+      <div style="display:flex;align-items:baseline;gap:14px;margin-top:6px">
+        <span style="{{ monoStyle }};font-size:64px;font-weight:600;color:{{ buildColor }}">{{ reality.buildabilityScore }}</span>
+        <span style="{{ bodyMutedStyle }}">/ 100 &nbsp; {{ reality.verdict }}</span>
+      </div>
+      <div style="{{ barTrackStyle }};max-width:520px"><div style="{{ buildBarFillStyle }}"></div></div>
+
+      <div style="{{ keepCutGridStyle }}">
+        <div style="{{ keepPanelStyle }}">
+          <div style="{{ stepLabelStyle }};margin-bottom:10px">keeping {{ reality.keep.length }}</div>
+          <sc-for list="{{ reality.keep }}" as="k" hint-placeholder-count="4">
+            <div style="display:flex;gap:10px;padding:6px 0;align-items:baseline"><span style="color:{{ colors.verified }}">✓</span><span style="{{ bodyStyle }};font-size:14px">{{ k }}</span></div>
+          </sc-for>
+        </div>
+        <div style="{{ cutPanelStyle }}">
+          <div style="{{ stepLabelStyle }};margin-bottom:10px">cutting {{ reality.cut.length }}</div>
+          <sc-for list="{{ reality.cut }}" as="k" hint-placeholder-count="9">
+            <div style="display:flex;gap:10px;padding:6px 0;align-items:baseline"><span style="{{ monoMutedStyle }}">✗</span><span style="{{ bodyMutedStyle }};font-size:14px;text-decoration:line-through">{{ k }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="{{ eyebrowStyle }};margin-top:36px">milestones</div>
+      <div style="{{ milestoneRowStyle }}">
+        <sc-for list="{{ milestonesView }}" as="m" hint-placeholder-count="4">
+          <div style="{{ m.wrapStyle }}">
+            <div style="{{ m.markerStyle }}"></div>
+            <div style="{{ monoStyle }};font-size:11px;margin-top:8px">{{ m.dayLabel }}</div>
+            <div style="{{ bodyStyle }};font-size:13px;font-weight:600;margin-top:2px">{{ m.title }}</div>
+            <div style="{{ bodyMutedStyle }};font-size:12px;margin-top:4px">{{ m.deliverable }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="{{ eyebrowStyle }};margin-top:36px">stack</div>
+      <div style="{{ stackTableStyle }}">
+        <sc-for list="{{ reality.stack }}" as="s" hint-placeholder-count="5">
+          <div style="{{ stackRowStyle }}">
+            <span style="{{ monoStyle }};font-size:13px;width:110px">{{ s.layer }}</span>
+            <span style="{{ bodyStyle }};font-size:14px;flex:1">{{ s.choice }}</span>
+            <span style="{{ bodyMutedStyle }};font-size:13px;flex:2">{{ s.why }}</span>
+            <span style="{{ s.freeTierStyle }}">{{ s.freeTierLabel }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="{{ monoStyle }};font-size:32px;font-weight:600;color:{{ colors.verified }};margin-top:18px">₹0/month</div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const DATA_URL = './data.js';
+
+// Exact tokens from the repo's app/globals.css (docs/UI-SPEC.md §2, §4.1).
+const PALETTE = {
+  dark: {
+    bg: '#0c0b0a', surface: '#151412', surface2: '#1c1a18', border: '#262421', borderBright: '#3d3a35',
+    text: '#f2efe9', muted: '#8d8880', accent: '#8d8880', accentDeep: '#8d8880',
+    verified: '#7be04a', stale: '#e0a93a', dead: '#e5484d',
+  },
+  light: {
+    bg: '#f7f6f3', surface: '#ffffff', surface2: '#efeee9', border: 'rgba(12,11,10,0.14)', borderBright: 'rgba(12,11,10,0.28)',
+    text: '#151412', muted: 'rgba(21,20,18,0.55)', accent: '#5c584f', accentDeep: '#5c584f',
+    verified: '#4f9a2e', stale: '#a5730f', dead: '#c93c40',
+  },
+};
+
+function fmtElapsed(ms) { return (ms / 1000).toFixed(1) + 's'; }
+function glyphFor(v) { return v === 'verified' ? '✅' : v === 'stale' ? '⚠️' : '❌'; }
+
+class Component extends DCLogic {
+  state = {
+    screen: 'landing', dark: true, idea: '', data: null,
+    tickerIndex: 0, stampSeconds: '0.0',
+    liveElapsed: 0, graphNodes: [], selectedNodeId: null,
+    vaultFilter: 'all', vaultVerifiedOnly: false,
+    planTeam: 2, planWeeks: 6, planSkills: [], planBudget: '0',
+  };
+
+  componentDidMount() {
+    import(DATA_URL).then((mod) => this.setState({ data: mod }));
+    let stamp = 0;
+    this._stampTimer = setInterval(() => { stamp += 0.1; this.setState({ stampSeconds: Math.min(stamp, 0.4).toFixed(1) }); }, 60);
+    this._tickerTimer = setInterval(() => {
+      this.setState((s) => s.data ? { tickerIndex: (s.tickerIndex + 1) % s.data.DEMO_EVIDENCE.length } : {});
+    }, 1400);
+    this._onMove = (e) => this.onNodeDrag(e);
+    this._onUp = () => this.setState({ draggingId: null });
+    document.addEventListener('mousemove', this._onMove);
+    document.addEventListener('mouseup', this._onUp);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this._stampTimer); clearInterval(this._tickerTimer); clearInterval(this._liveTimer);
+    document.removeEventListener('mousemove', this._onMove);
+    document.removeEventListener('mouseup', this._onUp);
+  }
+
+  toggleDark = () => this.setState((s) => ({ dark: !s.dark }));
+  goLanding = () => this.setState({ screen: 'landing' });
+
+  handleIdeaChange = (e) => this.setState({ idea: e.target.value });
+  handleIdeaKeyDown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.handleSubmit(e); } };
+  pickExample = (e) => this.setState({ idea: e.currentTarget.dataset.idea });
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+    if (!this.state.idea.trim()) return;
+    this.setState({ screen: 'live', liveElapsed: 0 });
+    this.startLiveTimer();
+  };
+
+  startLiveTimer() {
+    clearInterval(this._liveTimer);
+    const steps = this.state.data.DEMO_ANALYSIS.progress;
+    const total = steps.reduce((a, s) => a + s.ms, 0) / 3;
+    this._liveTimer = setInterval(() => {
+      this.setState((s) => {
+        const next = s.liveElapsed + 120;
+        if (next >= total + 500) {
+          clearInterval(this._liveTimer);
+          this.computeLayout();
+          return { liveElapsed: next, screen: 'results' };
+        }
+        return { liveElapsed: next };
+      });
+    }, 120);
+  }
+
+  computeLayout() {
+    const { DEMO_GRAPH } = this.state.data;
+    const W = 760, H = 480;
+    const nodes = DEMO_GRAPH.nodes.map((n) => ({ ...n, x: W / 2 + (Math.random() - 0.5) * 420, y: H / 2 + (Math.random() - 0.5) * 320 }));
+    const idx = {}; nodes.forEach((n, i) => (idx[n.id] = i));
+    const edges = DEMO_GRAPH.edges.map((e) => ({ s: idx[e.source], t: idx[e.target] }));
+    const k = Math.sqrt((W * H) / nodes.length) * 0.85;
+    let temp = 55;
+    for (let iter = 0; iter < 220; iter++) {
+      const disp = nodes.map(() => ({ x: 0, y: 0 }));
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          let dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
+          let dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+          let force = (k * k) / dist;
+          let ux = dx / dist, uy = dy / dist;
+          disp[i].x += ux * force; disp[i].y += uy * force;
+          disp[j].x -= ux * force; disp[j].y -= uy * force;
+        }
+      }
+      edges.forEach((e) => {
+        let a = nodes[e.s], b = nodes[e.t];
+        let dx = a.x - b.x, dy = a.y - b.y;
+        let dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+        let force = (dist * dist) / k;
+        let ux = dx / dist, uy = dy / dist;
+        disp[e.s].x -= ux * force; disp[e.s].y -= uy * force;
+        disp[e.t].x += ux * force; disp[e.t].y += uy * force;
+      });
+      nodes.forEach((n, i) => {
+        disp[i].x += (W / 2 - n.x) * 0.012;
+        disp[i].y += (H / 2 - n.y) * 0.012;
+        let dlen = Math.sqrt(disp[i].x ** 2 + disp[i].y ** 2) || 0.01;
+        let lim = Math.min(dlen, temp);
+        n.x += (disp[i].x / dlen) * lim;
+        n.y += (disp[i].y / dlen) * lim;
+        n.x = Math.max(28, Math.min(W - 28, n.x));
+        n.y = Math.max(28, Math.min(H - 28, n.y));
+      });
+      temp *= 0.965;
+    }
+    this.setState({ graphNodes: nodes });
+  }
+
+  onNodeMouseDown = (id) => (e) => { e.preventDefault(); e.stopPropagation(); this.setState({ draggingId: id }); };
+  onNodeDrag(e) {
+    const id = this.state.draggingId;
+    if (!id || !this._svgEl) return;
+    const pt = this._svgEl.createSVGPoint();
+    pt.x = e.clientX; pt.y = e.clientY;
+    const t = pt.matrixTransform(this._svgEl.getScreenCTM().inverse());
+    this.setState((s) => ({ graphNodes: s.graphNodes.map((n) => (n.id === id ? { ...n, x: t.x, y: t.y } : n)) }));
+  }
+  onNodeClick = (id) => (e) => { e.stopPropagation(); this.setState((s) => ({ selectedNodeId: s.selectedNodeId === id ? null : id })); };
+  setSvgRef = (el) => { this._svgEl = el; };
+
+  selectCluster = () => {};
+  goPlan = () => this.setState({ screen: 'plan-form' });
+  goPlanResult = () => this.setState({ screen: 'plan-result' });
+
+  teamDec = () => this.setState((s) => ({ planTeam: Math.max(1, s.planTeam - 1) }));
+  teamInc = () => this.setState((s) => ({ planTeam: Math.min(6, s.planTeam + 1) }));
+  handleWeeksChange = (e) => this.setState({ planWeeks: Number(e.target.value) });
+  toggleSkill = (e) => {
+    const sk = e.currentTarget.dataset.skill;
+    this.setState((s) => ({ planSkills: s.planSkills.includes(sk) ? s.planSkills.filter((x) => x !== sk) : [...s.planSkills, sk] }));
+  };
+  setBudget = (e) => this.setState({ planBudget: e.currentTarget.dataset.budget });
+
+  setVaultFilter = (e) => this.setState({ vaultFilter: e.currentTarget.dataset.filter });
+  toggleVerifiedOnly = () => this.setState((s) => ({ vaultVerifiedOnly: !s.vaultVerifiedOnly }));
+
+  renderVals() {
+    const s = this.state;
+    const c = PALETTE[s.dark ? 'dark' : 'light'];
+    const mono = "'Geist Mono', ui-monospace, 'SF Mono', monospace";
+    const heading = "'Schibsted Grotesk', ui-sans-serif, sans-serif";
+    const body = "'Geist', ui-sans-serif, system-ui, sans-serif";
+
+    if (!s.data) {
+      return { rootStyle: { minHeight: '100vh', background: c.bg }, topBarStyle: { display: 'none' } };
+    }
+    const { DEMO_EVIDENCE, DEMO_GRAPH, DEMO_NOVELTY, DEMO_REALITY, DEMO_ANALYSIS, EXAMPLE_IDEAS, CAPABILITIES, OUTPUTS } = s.data;
+
+    const monoStyle = { fontFamily: mono, color: c.text };
+    const monoMutedStyle = { fontFamily: mono, color: c.muted };
+    const bodyStyle = { fontFamily: body, color: c.text, lineHeight: 1.6, margin: 0 };
+    const bodyMutedStyle = { fontFamily: body, color: c.muted, lineHeight: 1.6, margin: 0 };
+    const hrStyle = { height: '1px', background: c.border, border: 0, margin: '20px 0' };
+    const eyebrowStyle = { fontFamily: mono, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.14em', color: c.muted, marginBottom: '22px' };
+    const sectionWrapStyle = { maxWidth: '1040px', margin: '0 auto', padding: '54px 32px' };
+    const cardStyle = { border: `1px solid ${c.border}`, borderRadius: '8px', padding: '20px', marginBottom: '18px', background: c.surface };
+    const barTrackStyle = { height: '6px', borderRadius: '3px', background: c.surface2, overflow: 'hidden', marginTop: '10px' };
+    const chipStyle = { fontFamily: mono, fontSize: '12px', color: c.muted, background: 'transparent', border: `1px solid ${c.border}`, borderRadius: '999px', padding: '6px 14px', cursor: 'pointer' };
+    const primaryBtnStyle = { fontFamily: heading, fontWeight: 600, fontSize: '15px', color: c.text, background: 'transparent', border: `1px solid ${c.text}`, borderRadius: '6px', padding: '13px 22px', cursor: 'pointer', width: '100%' };
+    const stepLabelStyle = { fontFamily: mono, fontSize: '12px', letterSpacing: '0.1em', color: c.text, textTransform: 'uppercase' };
+
+    const goldColors = { verified: c.verified, stale: c.stale, dead: c.dead, accent: c.accent };
+    function statusColor(v) { return v === 'verified' ? c.verified : v === 'stale' ? c.stale : c.dead; }
+
+    const tickerItem = DEMO_EVIDENCE[s.tickerIndex % DEMO_EVIDENCE.length];
+
+    // ---- landing capabilities ----
+    const capabilities = CAPABILITIES.map((cap) => ({ ...cap, glyph: cap.done ? '✓' : '·', opacity: cap.done ? 1 : 0.4 }));
+
+    // ---- live analysis ----
+    const stepsRaw = DEMO_ANALYSIS.progress;
+    const total = stepsRaw.reduce((a, st) => a + st.ms, 0) / 3;
+    const cum = []; let acc = 0;
+    stepsRaw.forEach((st) => { acc += st.ms / 3; cum.push(acc); });
+    const progressRows = stepsRaw.map((st, i) => {
+      const startAt = i === 0 ? 0 : cum[i - 1];
+      const done = s.liveElapsed >= cum[i];
+      const active = !done && s.liveElapsed >= startAt;
+      const glyph = done ? '✓' : active ? '⠋' : '·';
+      return {
+        step: st.step, label: st.label,
+        glyph, elapsed: done ? fmtElapsed(st.ms) : active ? fmtElapsed(s.liveElapsed - startAt) : 'queued',
+        rowStyle: { display: 'flex', alignItems: 'center', gap: '16px', padding: '9px 0', opacity: done ? 0.55 : 1 },
+        glyphStyle: { fontFamily: mono, width: '16px', color: active ? c.accent : c.muted },
+        labelStyle: { fontFamily: mono, fontSize: '13px', width: '110px', color: c.text, fontWeight: active ? 600 : 400 },
+      };
+    });
+    const progressListStyle = { marginBottom: '10px' };
+    const liveNodeCount = Math.min(DEMO_GRAPH.nodes.length, Math.floor((s.liveElapsed / total) * DEMO_GRAPH.nodes.length));
+    const liveVisibleNodes = DEMO_GRAPH.nodes.slice(0, liveNodeCount).map((n) => ({
+      label: n.label, chipStyle: { fontFamily: mono, fontSize: '11px', color: c.muted, border: `1px solid ${c.border}`, borderRadius: '999px', padding: '4px 10px', animation: 'ip-fadeUp 0.4s ease' },
+    }));
+    const feedCount = Math.min(DEMO_EVIDENCE.length, Math.floor(s.liveElapsed / 380) + 1);
+    const liveFeed = DEMO_EVIDENCE.slice(0, feedCount).slice().reverse().map((it) => ({
+      ...it, glyph: glyphFor(it.verify), verifyLabel: it.verify.toUpperCase(),
+      starsLabel: it.stars ? it.stars.toLocaleString() : '',
+      feedRowStyle: { display: 'flex', alignItems: 'center', gap: '14px', padding: '10px 0', animation: 'ip-slideIn 0.3s ease' },
+      glyphColorStyle: { fontFamily: mono },
+      statusColorStyle: { fontFamily: mono, fontSize: '12px', color: statusColor(it.verify), fontWeight: 600 },
+    }));
+    const graphAssemblingBoxStyle = { border: `1px dashed ${c.border}`, borderRadius: '10px', padding: '30px', textAlign: 'center', margin: '24px 0' };
+
+    // ---- results: graph ----
+    const posById = {}; s.graphNodes.forEach((n) => (posById[n.id] = n));
+    const kindColor = (k, verify) => {
+      if (k === 'problem') return c.text;
+      if (k === 'approach') return c.muted;
+      if (k === 'paper') return s.dark ? '#c9b89a' : '#8a7a5c';
+      if (k === 'dataset') return s.dark ? '#b39aa8' : '#8a6a76';
+      if (k === 'repo') return statusColor(verify);
+      return 'transparent';
+    };
+    const selected = s.selectedNodeId;
+    const connected = new Set();
+    if (selected) DEMO_GRAPH.edges.forEach((e) => { if (e.source === selected) connected.add(e.target); if (e.target === selected) connected.add(e.source); });
+    const renderNodes = s.graphNodes.map((n) => {
+      const evCount = n.evidenceIds ? n.evidenceIds.length : 0;
+      const r = n.kind === 'problem' ? 20 : n.kind === 'gap' ? 10 : Math.min(16, 6 + evCount * 2);
+      const dim = selected && selected !== n.id && !connected.has(n.id);
+      const isGap = n.kind === 'gap';
+      return {
+        id: n.id, label: n.label, x: n.x, y: n.y, r, labelX: n.x + r + 5, labelY: n.y + 4,
+        showLabel: n.kind === 'problem' || r > 12 || selected === n.id,
+        onMouseDown: this.onNodeMouseDown(n.id), onClick: this.onNodeClick(n.id),
+        circleStyle: {
+          fill: isGap ? 'none' : kindColor(n.kind), stroke: isGap ? c.verified : (selected === n.id ? c.text : 'none'),
+          strokeWidth: isGap ? 1.5 : (selected === n.id ? 2 : 0), opacity: dim ? 0.15 : 1, transition: 'opacity 0.2s',
+        },
+        textStyle: { fontFamily: mono, fontSize: '10px', fill: c.muted, opacity: dim ? 0.15 : 1 },
+      };
+    });
+    const renderEdges = DEMO_GRAPH.edges.map((e) => {
+      const a = posById[e.source], b = posById[e.target];
+      if (!a || !b) return { x1: 0, y1: 0, x2: 0, y2: 0, lineStyle: { display: 'none' } };
+      const dim = selected && !(e.source === selected || e.target === selected);
+      return { x1: a.x, y1: a.y, x2: b.x, y2: b.y, lineStyle: { stroke: c.border, strokeWidth: 1, opacity: dim ? 0.1 : 0.7 } };
+    });
+
+    // ---- results: rail ----
+    const satScore = DEMO_NOVELTY.saturationScore;
+    const satColor = satScore > 85 ? c.dead : satScore >= 60 ? c.stale : c.verified;
+    const novelty = {
+      ...DEMO_NOVELTY,
+      clusters: DEMO_NOVELTY.clusters.map((cl) => ({ ...cl, barStyle: { height: '100%', width: Math.round((cl.size / 11) * 100) + '%', background: c.accent, borderRadius: '3px' } })),
+    };
+    const evidenceSource = selected ? DEMO_EVIDENCE.filter((e) => (posById[selected]?.evidenceIds || []).includes(e.id)) : DEMO_EVIDENCE.slice(0, 5);
+    const evidenceLedgerRows = evidenceSource.map((ev) => ({
+      ...ev, glyph: glyphFor(ev.verify), glyphColorStyle: { fontFamily: mono, color: statusColor(ev.verify) },
+      metaLine: [ev.sourceType, ev.publishedAt, ev.corroborated ? 'corroborated' : null].filter(Boolean).join(' · '),
+      confBarStyle: { height: '100%', width: Math.round(ev.confidence * 100) + '%', background: c.accent, borderRadius: '2px' },
+    }));
+
+    const vaultFilterMap = { all: () => true, repo: (e) => e.sourceType === 'repo', dataset: (e) => e.sourceType === 'dataset', paper: (e) => e.sourceType === 'paper', api: (e) => e.sourceType === 'api' };
+    let vaultList = DEMO_EVIDENCE.filter(vaultFilterMap[s.vaultFilter] || (() => true));
+    if (s.vaultVerifiedOnly) vaultList = vaultList.filter((e) => e.verify === 'verified');
+    const vaultItems = vaultList.map((v) => ({
+      ...v, glyph: glyphFor(v.verify), verifyLabel: v.verify.toUpperCase(),
+      checkedSecs: Math.round((Date.now() - new Date(v.checkedAt).getTime()) / 1000) % 60 || 4,
+      statusColorStyle: { fontFamily: mono, fontSize: '11px', fontWeight: 600, color: statusColor(v.verify) },
+      titleStyle: { fontFamily: mono, fontSize: '15px', color: c.text, marginTop: '10px', opacity: v.verify === 'dead' ? 0.55 : 1, textDecoration: v.verify === 'dead' ? 'line-through' : 'none' },
+      subtitle: v.verifyNote || v.sourceType,
+      metaLine: [v.stars ? '★ ' + v.stars.toLocaleString() : null, v.license, v.publishedAt].filter(Boolean).join('   '),
+      cardStyle: { border: `1px solid ${c.border}`, borderLeft: `2px solid ${statusColor(v.verify)}`, borderRadius: '8px', padding: '16px', background: c.surface, opacity: v.verify === 'dead' ? 0.7 : 1 },
+    }));
+    const vaultFilters = ['all', 'repo', 'dataset', 'paper', 'api'].map((id) => ({
+      id, label: id, chipStyle: { ...chipStyle, background: s.vaultFilter === id ? c.text : 'transparent', color: s.vaultFilter === id ? c.bg : c.muted, borderColor: s.vaultFilter === id ? c.text : c.border },
+    }));
+
+    // ---- plan ----
+    const skillOptions = ['React', 'Python', 'ML', 'Mobile', 'Backend', 'Design'].map((sk) => ({
+      id: sk, label: sk,
+      style: { fontFamily: mono, fontSize: '12px', padding: '8px 14px', borderRadius: '999px', cursor: 'pointer', border: `1px solid ${c.border}`, background: s.planSkills.includes(sk) ? c.text : 'transparent', color: s.planSkills.includes(sk) ? c.bg : c.muted },
+    }));
+    const budgetOptions = ['0', '0-2k', '2k+'].map((id, i) => ({
+      id, label: id === '0' ? '₹0' : id === '0-2k' ? '₹0–2k' : '₹2k+',
+      segStyle: { fontFamily: mono, fontSize: '13px', padding: '10px 18px', cursor: 'pointer', border: `1px solid ${c.border}`, borderLeft: i === 0 ? `1px solid ${c.border}` : 'none', background: s.planBudget === id ? c.text : 'transparent', color: s.planBudget === id ? c.bg : c.text },
+    }));
+    const buildColor = DEMO_REALITY.buildabilityScore >= 70 ? c.verified : DEMO_REALITY.buildabilityScore >= 40 ? c.stale : c.dead;
+    const stackRows = DEMO_REALITY.stack.map((row) => ({
+      ...row, freeTierLabel: row.freeTier ? '✓ free' : '—',
+      freeTierStyle: { fontFamily: mono, fontSize: '12px', width: '70px', textAlign: 'right', color: row.freeTier ? c.verified : c.muted },
+    }));
+    const milestonesView = DEMO_REALITY.milestones.map((m, i) => ({
+      ...m, dayLabel: 'day ' + m.days, deliverable: m.deliverable,
+      wrapStyle: { flex: 1, borderTop: `2px solid ${i === 0 ? c.verified : c.border}`, paddingTop: '14px', position: 'relative' },
+      markerStyle: { position: 'absolute', top: '-6px', left: 0, width: i === 0 ? '12px' : '8px', height: i === 0 ? '12px' : '8px', borderRadius: '50%', background: i === 0 ? c.verified : c.muted },
+    }));
+
+    return {
+      rootStyle: { minHeight: '100vh', background: c.bg, color: c.text, fontFamily: body, transition: 'background 0.2s,color 0.2s' },
+      topBarStyle: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 32px', borderBottom: `1px solid ${c.border}`, position: 'sticky', top: 0, background: c.bg, zIndex: 10 },
+      showIdeaRecap: s.screen !== 'landing' && !!s.idea,
+      idea: s.idea || DEMO_ANALYSIS.idea,
+      monoStyle, monoMutedStyle, bodyStyle, bodyMutedStyle, hrStyle, eyebrowStyle, sectionWrapStyle, cardStyle, barTrackStyle, chipStyle, primaryBtnStyle, stepLabelStyle,
+      darkToggleStyle: { fontFamily: mono, fontSize: '11px', color: c.muted, background: 'transparent', border: `1px solid ${c.border}`, borderRadius: '999px', padding: '5px 12px', cursor: 'pointer' },
+      darkToggleLabel: s.dark ? '☾ dark' : '☀ light',
+      toggleDark: this.toggleDark, goLanding: this.goLanding,
+      colors: goldColors,
+
+      isLanding: s.screen === 'landing', isLive: s.screen === 'live', isResults: s.screen === 'results', isPlanForm: s.screen === 'plan-form', isPlanResult: s.screen === 'plan-result',
+
+      heroWrapStyle: { maxWidth: '900px', margin: '0 auto', padding: '70px 32px 40px' },
+      headlineStyle: { fontFamily: heading, fontWeight: 700, fontSize: 'clamp(40px, 6vw, 78px)', letterSpacing: '-0.03em', lineHeight: 1, margin: 0, color: c.text },
+      stampBoxStyle: { fontFamily: mono, fontWeight: 500, fontSize: '0.55em', border: `1px solid ${c.verified}`, borderRadius: '6px', padding: '4px 12px', display: 'inline-block', verticalAlign: 'middle', letterSpacing: '-0.01em' },
+      stampTickStyle: { color: c.verified },
+      stampSeconds: s.stampSeconds,
+      subheadStyle: { fontFamily: body, fontSize: '18px', color: c.muted, maxWidth: '46ch', marginTop: '22px', lineHeight: 1.6 },
+      inputRowStyle: { display: 'flex', gap: '10px', border: `1px solid ${c.border}`, borderRadius: '8px', padding: '6px 6px 6px 18px', alignItems: 'center' },
+      ideaTextareaStyle: { flex: 1, background: 'transparent', border: 'none', outline: 'none', resize: 'none', fontFamily: body, fontSize: '16px', color: c.text, padding: '12px 0' },
+      arrowButtonStyle: { fontFamily: mono, fontSize: '16px', background: c.surface2, border: 'none', borderRadius: '6px', width: '42px', height: '42px', cursor: 'pointer', color: c.text },
+      exampleIdeas: EXAMPLE_IDEAS,
+      tickerItem, tickerVerifyLabel: tickerItem.verify.toUpperCase(),
+      tickerBadgeStyle: { fontFamily: mono, fontSize: '11px', fontWeight: 600, color: statusColor(tickerItem.verify) },
+      tickerStarsLabel: tickerItem.stars ? tickerItem.stars.toLocaleString() : '',
+
+      killShotGridStyle: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginTop: '10px' },
+      killShotDimPanelStyle: { border: `1px solid ${c.border}`, borderRadius: '8px', padding: '22px', opacity: 0.65 },
+      killShotBrightPanelStyle: { border: `1px solid ${c.border}`, borderLeft: `2px solid ${c.verified}`, borderRadius: '8px', padding: '22px' },
+      deadCalloutStyle: { border: `1px solid ${c.border}`, borderRadius: '6px', padding: '10px 14px', marginTop: '14px' },
+
+      outputsGridStyle: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 32px' },
+      outputs: OUTPUTS,
+
+      stepRowStyle: { display: 'flex', gap: '24px', padding: '20px 0', alignItems: 'baseline' },
+      stepNumStyle: { fontFamily: mono, fontSize: '32px', color: c.muted, width: '60px' },
+      stepLabelStyle,
+
+      honestyPanelStyle: { border: `1px solid ${c.border}`, borderRadius: '8px', padding: '24px' },
+      firstUnverified: DEMO_ANALYSIS.unverified[0],
+
+      capGridStyle: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px 32px' },
+      capabilities,
+      capItemStyle_fn: { display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 0', borderBottom: `1px solid ${c.border}` },
+      capGlyphStyle_fn: { color: c.verified, fontFamily: mono, width: '14px' },
+
+      footerStyle: { fontFamily: mono, fontSize: '11px', color: c.muted, textAlign: 'center', padding: '40px 32px', borderTop: `1px solid ${c.border}` },
+
+      ideaQuoteStyle: { fontFamily: heading, fontSize: '22px', fontWeight: 600, color: c.text },
+      progressRows, progressListStyle,
+      graphAssemblingBoxStyle, liveNodeCount, totalNodeCount: DEMO_GRAPH.nodes.length, liveVisibleNodes,
+      liveFeed,
+
+      resultsGridStyle: { display: 'grid', gridTemplateColumns: '60% 40%', maxWidth: '1400px', margin: '0 auto' },
+      graphPaneStyle: { borderRight: `1px solid ${c.border}`, minHeight: '640px', display: 'flex', flexDirection: 'column' },
+      svgRef: this.setSvgRef,
+      svgStyle: { width: '100%', flex: 1, background: s.dark ? '#0f0d0b' : '#eeecec' },
+      renderNodes, renderEdges,
+      railStyle: { padding: '24px', overflowY: 'auto', maxHeight: '640px' },
+      satColor, satBarFillStyle: { height: '100%', width: satScore + '%', background: satColor, borderRadius: '3px' },
+      novelty, selectCluster: this.selectCluster,
+      whiteSpaceCardStyle: { border: `1px solid ${c.border}`, borderLeft: `2px solid ${c.verified}`, borderRadius: '8px', padding: '20px', marginBottom: '18px' },
+      whiteSpaceItemStyle: { display: 'flex', gap: '12px', marginTop: '14px', alignItems: 'flex-start' },
+      hollowRingStyle: { width: '10px', height: '10px', borderRadius: '50%', border: `1.5px solid ${c.verified}`, marginTop: '5px', flexShrink: 0 },
+      selectedNodeSuffix: selected ? ' — ' + (posById[selected]?.label || '') : '',
+      evidenceLedgerRows,
+      unverifiedPanelStyle: { border: `1px solid ${c.border}`, borderRadius: '8px', padding: '20px', marginBottom: '18px', background: 'transparent' },
+      analysis: DEMO_ANALYSIS,
+      goPlan: this.goPlan,
+
+      vaultFilters, setVaultFilter: this.setVaultFilter, toggleVerifiedOnly: this.toggleVerifiedOnly,
+      verifiedOnlyStyle: { ...chipStyle, background: s.vaultVerifiedOnly ? c.verified : 'transparent', color: s.vaultVerifiedOnly ? c.bg : c.muted, borderColor: s.vaultVerifiedOnly ? c.verified : c.border },
+      vaultGridStyle: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' },
+      vaultItems,
+
+      planFormWrapStyle: { maxWidth: '620px', margin: '0 auto', padding: '60px 32px' },
+      planTitleStyle: { fontFamily: heading, fontWeight: 600, fontSize: '30px', margin: '10px 0 0' },
+      fieldLabelStyle: { fontFamily: mono, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.1em', color: c.muted, marginBottom: '10px' },
+      planTeam: s.planTeam, teamDec: this.teamDec, teamInc: this.teamInc,
+      stepperBtnStyle: { width: '34px', height: '34px', borderRadius: '6px', border: `1px solid ${c.border}`, background: 'transparent', color: c.text, fontSize: '16px', cursor: 'pointer' },
+      planWeeks: s.planWeeks, handleWeeksChange: this.handleWeeksChange,
+      sliderStyle: { width: '100%', accentColor: c.accent },
+      skillOptions, toggleSkill: this.toggleSkill,
+      budgetOptions, setBudget: this.setBudget, segWrapExtra: '',
+      goPlanResult: this.goPlanResult,
+
+      reality: { ...DEMO_REALITY, stack: stackRows }, buildColor, buildBarFillStyle: { height: '100%', width: DEMO_REALITY.buildabilityScore + '%', background: buildColor, borderRadius: '3px' },
+      keepCutGridStyle: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginTop: '30px' },
+      keepPanelStyle: { border: `1px solid ${c.verified}`, borderRadius: '8px', padding: '18px' },
+      cutPanelStyle: { border: `1px solid ${c.border}`, borderRadius: '8px', padding: '18px' },
+      milestoneRowStyle: { display: 'flex', gap: '20px', marginTop: '12px' },
+      milestonesView,
+      stackTableStyle: { border: `1px solid ${c.border}`, borderRadius: '8px', overflow: 'hidden' },
+      stackRowStyle: { display: 'flex', gap: '16px', padding: '12px 16px', borderBottom: `1px solid ${c.border}`, alignItems: 'baseline' },
+    };
+  }
+}
+
+</script>
+</body>
+</html>

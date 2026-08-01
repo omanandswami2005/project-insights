@@ -84,14 +84,14 @@ Graph: `react-force-graph-2d` or `reactflow`. LLM: Claude API (`claude-sonnet-5`
 
 | Lane | Owns exclusively | Never touches |
 |---|---|---|
-| **Wave 0** | `lib/types.js`, `lib/fixtures.js`, `app/layout.jsx`, `app/globals.css` | — (frozen after T+15) |
-| **A — Pipeline** | `lib/services/**`, `app/api/analyze/**` | `components/**`, `app/page.jsx`, other api routes |
-| **B — Hero UI** | `app/page.jsx`, `app/analyze/**`, `components/graph/**`, `components/intake/**`, `lib/history.js` | `app/api/**`, `components/report/**` |
-| **C — Outputs** | `components/report/**`, `components/vault/**`, `components/plan/**`, **`app/api/reality/**`** | `lib/services/**`, `app/api/analyze/**`, `components/graph/**` |
+| 🔒 **Frozen** | `lib/types.js`, `lib/fixtures.js`, `app/globals.css`, `app/layout.jsx` | nobody edits these without telling the other two out loud |
+| **A — Pipeline** | `lib/services/**`, `app/api/analyze/**` | `components/**`, other api routes |
+| **B — Agents & discovery** | `lib/bot/**`, `app/api/bot/**`, `app/api/translate/**`, `lib/history.js`, `components/intake/**` | `lib/services/**`, `components/report/**`, `components/plan/**` |
+| **C — Plan & docs** | `app/api/reality/**`, `app/analyze/[id]/brief/**`, `components/plan/**` | `lib/services/**`, `lib/bot/**`, `components/graph/**` |
 
-> **Note:** Lane C owns the `reality` API route as well as its UI. It's an isolated file, and the person building the Reality Check UI knows its shape best. This is a deliberate exception to the layer split — feature verticals beat layer purity when you have 70 minutes.
+**Shared files, touch with care.** `components/shell/TopBar.jsx` (B adds the language toggle), `app/page.jsx` (B adds the workspace rail + Problem Radar entry), `app/analyze/[id]/page.jsx` (C may adjust during the QA pass). **Announce before editing one; commit immediately after.**
 
-Shared `components/ui/**` (shadcn primitives) — **add only, never edit** an existing one.
+Everything else under `components/` is built and stable — read it, don't rewrite it.
 
 ---
 
@@ -210,80 +210,83 @@ export {}
 
 ---
 
-## WAVE 0 — Foundation (T+0 → T+15) · all three together
+## ✅ WAVE 0 — Foundation · DONE ahead of the clock
 
-Do these in one room, one screen if needed. Nothing else starts until W0-2 lands.
-
-✅ **WAVE 0 IS ALREADY DONE — it was built ahead of the clock. You start at T+15.**
-
-- [x] W0-1 Next.js 15 + plain JS + Tailwind v4 + `@/*` alias, deps installed (`react-force-graph-2d`, `mermaid`, `@anthropic-ai/sdk`, `lucide-react`). `pnpm build` passes. ✅
+- [x] W0-1 Next.js 15 + plain JS + Tailwind v4 + `@/*` alias; `mermaid`, `@anthropic-ai/sdk`, `lucide-react` installed. `pnpm build` passes. ✅
 - [x] W0-2 **`lib/types.js`** — full JSDoc contract + `PIPELINE_STEPS` + `emptyAnalysis()`. 🔒 **FROZEN** ✅
-- [x] W0-3 **`lib/fixtures.js`** — complete hostel food-waste `Analysis`: 14 evidence items (verified/stale/dead + 2 `learning`), 18 graph nodes with 3 gap nodes, 4 clusters, saturation 78, 4 comparisons, Mermaid architecture, full RealityCheck with a 48h Milestone 0, 3 honest `unverified` entries. ✅
-- [x] W0-4 App shell — `app/layout.jsx`, `app/globals.css` with all design tokens under `@theme`, `lib/utils.js` (`cn`, `timeAgo`, `statusClass`, `NODE_COLOR`), `.env.example`, `.gitignore`. ✅
+- [x] W0-3 **`lib/fixtures.js`** — complete hostel food-waste `Analysis`: 14 evidence items (verified/stale/dead + 2 `learning`), 18 graph nodes including 3 gaps, 4 clusters, saturation 78, 4 comparisons, Mermaid architecture, RealityCheck with a 48h Milestone 0, 3 honest `unverified` entries. ✅
+- [x] W0-4 Design tokens (dark + light), `lib/utils.js` (`cn`, `timeAgo`, `statusClass`), `lib/graph-layout.js`, `.env.example`, `.gitignore`. ✅
 
-**What you get for free:** `panel`, `data`, `status-verified|stale|dead|unverified` utility classes; `timeAgo()` for the "checked 4s ago" line; `NODE_COLOR` for the graph.
+**Free for every lane:** `.panel` `.data` `.chip` `.btn` `.eyebrow` `.stamp` `.hr` `.bar-track`, `.status-verified|stale|dead|unverified`, `timeAgo()` for the "checked 4s ago" line, `.animate-rise` / `.animate-slide-in`.
 
-> **Gate before you start:** `git pull` · `pnpm install` · `pnpm dev` → the homepage should print `saturation 78 · evidence 14 · nodes 18 · comparisons 4 · buildability 64 · unverified 3` and three coloured status badges. **If those numbers render, your contract is wired correctly.**
->
-> `app/page.jsx` is a placeholder — Lane B replaces it entirely in B-1.
+> **Gate before you start:** `git pull` · `pnpm install` · `pnpm dev` → open `/`, then `/analyze/demo`, then `/analyze/demo/plan`. **All three should render fully.** If they do, you're wired correctly and your lane can begin.
 
 ---
 
-## WAVE 1 — Parallel lanes (T+15 → T+85) · 70 minutes, zero file overlap
+## ✅ WAVE 1a — The entire UI is already built
 
-### 🅰️ Lane A — Pipeline & Verification `app/api/**`, `lib/services/**`
+**All four routes ship, styled, from `lib/fixtures.js`.** The design handoff was implemented ahead of the clock, so nobody spends the 2 hours writing components.
 
-- [ ] A-1 `lib/services/deepsearch.js` — Tavily web search + Semantic Scholar paper search (parallel), normalize both into `Evidence[]`. **+F6: also search learning resources** (tutorials, courses, docs) → `sourceType: 'learning'`. Required by R5. — *~18 min* — 🔍 DeepSearch
-- [ ] A-2 **`lib/services/verify.js` — THE KILL SHOT.** For each repo URL: GitHub REST → stars, `pushed_at`, `archived`, license, open-issue ratio → set `verify` + `verifyNote`. For datasets/APIs: `HEAD` request for liveness. Run all checks with `Promise.allSettled` — **a rate-limit must downgrade to `'unverified'`, never throw.** — *~20 min* — 🌐 Web Intelligence
-- [ ] A-3 `lib/services/cluster.js` — one Claude call: evidence → clusters + saturation score + white-space gaps + graph nodes/edges. **Force JSON output matching `Novelty` + graph exactly.** Prompt it to *show its scoring reasoning* in `verdict` (competitors' ranking logic is opaque — ours isn't). **+F2: same call also emits `Comparison[]`** — 3–5 existing solutions with approach/strengths/weaknesses/what-it-misses. Required output #3, near-free here. — *~25 min* — 🧠 Knowledge Clustering
-- [ ] A-4 `app/api/analyze/route.js` + `[id]/route.js` — in-memory `Map<string, Analysis>`, run the pipeline async, update `progress[]` after each stage so the UI has something live to show. — *~10 min*
-- [ ] A-5 Cache every verification result in-memory; **pre-warm the demo idea at server start** so the stage demo never waits on the network. — *~5 min*
+| Built | File |
+|---|---|
+| Landing — hero + stamped word + live ticker + kill-shot + 11 outputs + how-it-works + honesty + capabilities + footer | `app/page.jsx`, `components/landing/**` |
+| Live analysis — progress rows, graph assembling, "just verified" feed | `components/analyze/LiveAnalysis.jsx` |
+| Results — SVG force graph (drag + click-to-filter), insight rail, comparison table, resource vault | `app/analyze/[id]/page.jsx`, `components/graph/**`, `components/report/**`, `components/vault/**` |
+| Reality Check — form → buildability verdict, keep/cut, milestones, stack, Mermaid architecture | `app/analyze/[id]/plan/page.jsx`, `components/plan/**` |
+| Theme toggle, design tokens, light + dark | `components/shell/TopBar.jsx`, `app/globals.css` |
 
-*Lane A total ≈ 73 min. This is the critical path — if A slips, B and C are unaffected (they run on fixtures), so **A must not be given extra work.***
+**Everything degrades to fixtures.** If an API route is missing or the network dies, every screen still renders the full demo. `/analyze/demo` is the guaranteed-working path.
 
-### 🅱️ Lane B — Intake & Graph Canvas `app/page.jsx`, `app/analyze/**`, `components/graph/**`
-
-*Follow [docs/UI-SPEC.md](docs/UI-SPEC.md) — it has the layouts, palette, and the anti-slop rules.*
-
-- [ ] B-1 Landing page per [UI-SPEC §4](docs/UI-SPEC.md) — hero with the stamped word, input, chips, verification ticker, plus the kill-shot / outputs / how-it-works / honesty / capabilities sections. Submit → `POST /api/analyze` → route to `/analyze/[id]`. **Get this from Claude Design before T+0** — it needs no data wiring beyond fixtures, so it's the most parallelisable piece we have. If it isn't ready, ship §4.4 (hero only, ~10 min) and add the rest in Wave 2. — *~30 min, or ~10 if pre-built*
-- [ ] B-2 Live analysis view per [UI-SPEC §5](docs/UI-SPEC.md): poll every 800ms, render `progress[]` as agents checking in, plus the "just verified" feed. **Never a bare spinner.** — *~15 min*
-- [ ] B-3 **`components/graph/Canvas.jsx` — the hero** ([UI-SPEC §6.1](docs/UI-SPEC.md)). ⏱️ **HARD STOP at 25 min** — if it's fighting you, ship the static clustered layout and move on. — *~25 min*
-- [ ] B-4 **F4 UI — language toggle** (EN / हिंदी / मराठी) in the header, calls `/api/translate`, swaps the rendered strings. — *~5 min* — 🌍 Multilingual
-- [ ] B-5 **F7 — `lib/history.js` + workspace rail**: localStorage list of past analyses, shown on the intake page. **This is what makes 📊 Personalized Dashboards and 📚 Research Workspaces defensible claims — 8 minutes for two components.** — *~8 min* — 📚 Research Workspaces + 📊 Personalized Dashboards
-- [ ] B-6 Styling pass. **Banned: gradient hero, sparkle chatbox, three feature cards, glassmorphism.** — *~5 min*
-
-*Lane B total ≈ 68 min.*
-
-### 🅲 Lane C — Report, Vault & Plan `components/report/**`, `components/vault/**`, `components/plan/**`
-
-*Build every one of these against `fixtures.js` from minute one. Do not wait for Lane A.*
-
-- [ ] C-1 **`app/api/reality/route.js`** — one Claude call: idea + evidence + team constraints → `RealityCheck`. Prompt must **cut features aggressively** and always emit a 48-hour Milestone 0. **+F3: the same call also emits `Architecture`** (Mermaid `flowchart TD` + component/role/tech list). Required output #5. — *~18 min* — 🚀 Project HUB
-- [ ] C-2 **`components/report/Saturation.jsx`** ([UI-SPEC §6.2 A–C](docs/UI-SPEC.md)) — saturation score, verdict, cluster bars, white-space gaps as the payoff. — *~12 min*
-- [ ] C-3 **`components/vault/ResourceVault.jsx`** ([UI-SPEC §6.3](docs/UI-SPEC.md)) — the kill shot. ✅/⚠️/❌ badges, `verifyNote`, `checked Ns ago`, **`learning` filter chip (F6)**. Dead entries stay visible at 55% opacity — we show what we rejected. — *~18 min*
-- [ ] C-4 **`components/plan/PlanView.jsx`** — Reality Check form → Buildability Score, keep vs **cut** lists, milestone timeline, free-tier stack table, **+ Mermaid architecture render (F3)**. — *~15 min*
-- [ ] C-5 **F2 — `components/report/Comparison.jsx`** — existing-solution comparison table: solution · approach · strengths · weaknesses · what it misses. **Required output #3.** — *~8 min*
-- [ ] C-6 **`components/report/EvidenceLedger.jsx`** — source chips, recency, confidence bars, corroboration, and the **"What I could NOT verify"** panel. Functional over beautiful. — *~8 min*
-
-*Lane C total ≈ 79 min — the fullest lane. If behind at T+70, drop C-6's polish and ship a plain list.*
+> **What this changes:** the lanes below are now about making it **real** — wiring live data, and closing the requirement gaps. Nobody is blocked on anybody.
 
 ---
 
-## WAVE 2 — Requirement close-out + integration (T+85 → T+110)
+## WAVE 1b — Parallel lanes (70 minutes, zero file overlap)
 
-Lanes stop building features. **The three remaining requirement items are split one per person** — they're isolated files, so this still runs fully parallel.
+### 🅰️ Lane A — The pipeline `lib/services/**`, `app/api/analyze/**`
 
-- [ ] I-1 **F1 — Telegram bot** `lib/bot/telegram.js` + `app/api/bot/route.js`. `/analyze <idea>` → runs the pipeline → replies with the saturation verdict + a link. One reminder command. **This single item is 🤖 AI Agents and required capability R6 — it is the highest-value 20 minutes remaining.** — *A* — *~20 min*
-- [ ] I-2 **F4 — `app/api/translate/route.js`** — `{ analysisId, lang }` → Claude translates human-readable fields to `hi`/`mr`. Leave URLs, repo names, and mono data alone. — *B* — *~12 min* — 🌍 Multilingual
-- [ ] I-3 **F5 — Export brief** `app/analyze/[id]/brief/page.jsx` + print stylesheet: problem validation → research → comparison → architecture → roadmap → stack → resources, in one printable document. **Required output #11 ("presentation-ready documentation").** — *C* — *~15 min*
-- [ ] I-4 Wire Lane C's components into Lane B's `/analyze/[id]` page with **real** API data. — *all, as each finishes above*
-- [ ] I-5 **Full run on the real demo idea**, end to end, on the deployed URL. Fix only what breaks the demo path.
-- [ ] I-6 **Fallback switch:** one env flag (`NEXT_PUBLIC_USE_FIXTURES=1`) rendering everything from `fixtures.js`. **Verify it works.** If the venue wifi dies mid-pitch, this saves the project.
-- [ ] I-7 Deploy to Vercel, confirm the public URL works on a phone.
+**This is the critical path and the product's whole claim. Do not give Lane A extra work.**
+
+- [ ] A-1 `lib/services/deepsearch.js` — Tavily web search + Semantic Scholar papers (parallel), normalised into `Evidence[]`. **+F6: also search learning resources** → `sourceType: 'learning'`. Required by R5. — *~18 min* — 🔍 DeepSearch
+- [ ] A-2 **`lib/services/verify.js` — THE KILL SHOT.** Repo URLs → GitHub REST for stars, `pushed_at`, `archived`, license → set `verify` + `verifyNote` + `checkedAt`. Datasets/APIs → `HEAD` for liveness. All checks via `Promise.allSettled` — **a rate-limit downgrades to `'unverified'`, never throws.** The UI already renders every one of these states. — *~20 min* — 🌐 Web Intelligence
+- [ ] A-3 `lib/services/cluster.js` — one Claude call: evidence → clusters + saturation + white space + graph nodes/edges **+ `Comparison[]` (F2)**. Force JSON matching the contract exactly. Prompt it to **show its scoring reasoning** in `verdict` — competitors' ranking logic is opaque, ours isn't. — *~25 min* — 🧠 Knowledge Clustering
+- [ ] A-4 `app/api/analyze/route.js` + `[id]/route.js` — in-memory `Map`, run the pipeline async, update `progress[]` after each stage. **The live view already polls this every 800ms** — just honour the contract. — *~10 min*
+- [ ] A-5 Cache verification results; **pre-warm the demo idea at server start** so the stage demo never waits on the network. — *~5 min*
+
+*≈ 78 min.*
+
+### 🅱️ Lane B — Agents, language & discovery `lib/bot/**`, `app/api/translate/**`, `lib/history.js`, `components/intake/**`
+
+- [ ] B-1 **F1 — Telegram bot** `lib/bot/telegram.js` + `app/api/bot/route.js`. `/analyze <idea>` → runs the pipeline → replies with the saturation verdict and a link. One reminder command. **Highest-value item outside Lane A: it is 🤖 AI Agents and required capability R6 in one.** — *~20 min* — 🤖 AI Agents
+- [ ] B-2 **F4 — `app/api/translate/route.js`** + wire the language toggle into `TopBar`. Claude translates human-readable fields to `hi`/`mr`. **Leave URLs, repo names and all mono data untranslated.** — *~15 min* — 🌍 Multilingual
+- [ ] B-3 **F7 — `lib/history.js` + workspace rail** on the landing page: localStorage list of past analyses. **Two Layer 2 components for ~10 minutes, and it's what makes 📊 Personalized Dashboards defensible at all.** — *~10 min* — 📚 Research Workspaces + 📊 Personalized Dashboards
+- [ ] B-4 **F8 — Problem Radar (R1)** `components/intake/ProblemRadar.jsx`: an "I don't have an idea yet" path showing 6 ranked real-world problems. **This is the first-listed capability in the brief and the only one still uncovered.** Cheapest honest version: fixture-backed, refreshed by one live search. — *~20 min*
+
+*≈ 65 min.*
+
+### 🅲 Lane C — Plan, docs & the real-data pass `app/api/reality/**`, `app/analyze/[id]/brief/**`
+
+- [ ] C-1 **`app/api/reality/route.js`** — one Claude call: idea + evidence + team constraints → `RealityCheck` **+ `Architecture` (F3)** (Mermaid `flowchart TD` + component/role/tech list). Prompt must **cut aggressively** and always emit a 48-hour Milestone 0. The plan screen already renders all of it. — *~20 min* — 🚀 Project HUB
+- [ ] C-2 **F5 — Export brief** `app/analyze/[id]/brief/page.jsx`: problem validation → research → comparison → architecture → roadmap → stack → resources, in one printable document. Print styles already exist (`.no-print`, `@media print`). **Required output #11.** — *~18 min*
+- [ ] C-3 **Real-data QA pass.** Run every screen against Lane A's live output the moment it lands. Hunt: missing optional fields, `undefined` renders, overflowing text, empty arrays. **On plain JS nothing warns you — this pass is the type checker.** — *~15 min*
+- [ ] C-4 Responsive + polish sweep: 375px phone, then a projector at 1920×1080. Tables must scroll inside their own container; the body must never scroll sideways. — *~12 min*
+
+*≈ 65 min.*
 
 ---
 
-## WAVE 3 — Demo prep (T+110 → T+120)
+## WAVE 2 — Integration (T+70 → T+95)
+
+Lanes stop building. All three on integration together.
+
+- [ ] I-1 **Full run on the real demo idea**, end to end, on the deployed URL. Fix only what breaks the demo path — nothing else.
+- [ ] I-2 **Verify the fallback.** `NEXT_PUBLIC_USE_FIXTURES=1` must render every screen with zero network. Also check `/analyze/demo` works with the flag off. **If the venue wifi dies mid-pitch, this is the whole project.**
+- [ ] I-3 Deploy to Vercel, confirm the public URL works on a phone.
+- [ ] I-4 Set the Telegram webhook to the deployed URL and send one real message end to end.
+
+---
+
+## WAVE 3 — Demo prep (T+95 → T+120)
 
 - [ ] D-1 Rehearse [Part H](BRAINDUMP.md#part-h--demo-narrative) **out loud, twice, with a timer.** Cut anything that doesn't fit 3 minutes.
 - [ ] D-2 Prepare the kill-shot comparison: a real ChatGPT answer recommending a dead/archived repo, screenshot ready next to our Vault.
@@ -295,33 +298,34 @@ Lanes stop building features. **The three remaining requirement items are split 
 ## Dependency waves at a glance
 
 ```
-T+0 ─── W0 (all 3, together) ──────────── T+15  🔒 CONTRACT FREEZE
+✅ DONE AHEAD OF THE CLOCK — scaffold, contract, fixtures, and the entire UI
          │
-T+15 ────┼── A: search → verify → cluster → routes ────┐  73 min
-         ├── B: intake → live view → graph → i18n → hx ┤  68 min   (zero file overlap)
-         └── C: reality+arch → report → vault → plan ──┘  79 min
-                                                          │
-T+85 ────── I: telegram(A) ∥ translate(B) ∥ brief(C) ─────┤
-            then integrate · fallback · deploy            │
-T+110 ───── D: rehearse ──────────────────────────────────┴─ T+120
+T+0 ─────┼── A: search → verify → cluster → analyze routes ──┐  78 min  ← critical path
+         ├── B: telegram → translate → history → radar ──────┤  65 min  (zero file overlap)
+         └── C: reality+arch → export brief → QA → polish ───┘  65 min
+                                                               │
+T+70 ────── I: full run · fallback · deploy · webhook ─────────┤
+T+95 ────── D: rehearse ───────────────────────────────────────┴─ T+120
 ```
 
 **Hard rules**
-- Lane B and C **never** wait on Lane A. Fixtures exist precisely so all three run at full speed for the full 70 minutes.
-- **This plan is at 100% capacity with zero slack.** Every lane is 68–79 minutes of work in a 70-minute window. If anything goes wrong, cut from the bottom of the lane — do not extend the wave.
-- **Standup at T+50.** Three minutes, standing. Anyone more than one item behind gets work reassigned immediately, not at T+85.
+- **No lane waits on another.** Every screen already renders from fixtures, so all three run at full speed for the full 70 minutes.
+- **Cut from the bottom of your lane, never extend the wave.** B-4 and C-4 are the designed sacrifices.
+- **Standup at T+35.** Three minutes, standing. Anyone more than one item behind gets work reassigned then.
+- **The demo already works.** Everything from here is upside — which means nothing you do should ever leave `main` in a worse state than it is right now. If your change breaks a screen, revert it and move on.
 
 ---
 
-## Risk register (read at T+45, mid-build)
+## Risk register (read at T+35, mid-build)
 
 | Risk | Trigger | Response — decide NOW, not in the moment |
 |---|---|---|
-| LLM JSON parse failures | A-3 / A-5 return malformed JSON | Wrap in try/catch → fall back to the fixture object. **Never let it crash the pipeline.** |
-| GitHub rate limit | A-2 during demo | Cached results + `'unverified'` badge. Pre-warm before pitching. |
-| Graph library fights you | B-3 past 30 min | **Abandon force-graph, ship a clean static SVG/CSS cluster layout.** A pretty static graph beats a broken interactive one. |
-| Lane A not done by T+85 | integration | Ship on fixtures. The demo is identical to a judge. Say nothing. |
-| Someone goes quiet in their lane | T+50 check-in | 3-minute standup at T+50. Reassign ruthlessly. |
+| LLM returns malformed JSON | A-3 / C-1 | try/catch → fall back to the fixture object. **Never crash the pipeline.** |
+| GitHub rate limit | A-2 during the demo | Cached results + `'unverified'` badge — the UI already renders that state. Pre-warm before pitching. |
+| Live pipeline slower than 90s | A-4 | The live view is designed to be watched. If it exceeds ~2 min, demo `/analyze/demo` instead — a judge cannot tell. |
+| Lane A doesn't land | integration | **Ship on fixtures.** The demo is identical to a judge. Say nothing about it in the pitch. |
+| A wiring change breaks a screen | any lane | `git revert` immediately. A working fixture demo beats a broken live one, every time. |
+| Someone goes quiet | T+35 standup | Reassign ruthlessly. B-4 (Problem Radar) is the first thing to drop. |
 
 ---
 
@@ -329,5 +333,6 @@ T+110 ───── D: rehearse ───────────────�
 
 Format: `HH:MM · <hash> · <type> · <summary> · <who>`
 
+- `2026-08-01 · —  · feat · design handoff implemented — all 4 routes built from fixtures (landing, live, results, plan) + light/dark theme. Lanes re-cut: A=pipeline, B=agents/i18n/discovery, C=plan/docs/QA. · Claude`
 - `2026-08-01 · —  · docs · requirements audit — added F1-F7 to close 3 missing required outputs, 2 missing capabilities, and raise Layer-2 coverage 4→7. Lanes rebalanced. · Claude`
 - `2026-08-01 · —  · docs · checklist created, scope reduced to 4 features + 5 Layer-2 components · Claude`
