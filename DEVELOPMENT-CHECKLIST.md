@@ -66,7 +66,7 @@ GitHub repo scaffolding & issue creation (E6 full) · adaptive re-planning · Co
 ## Stack (locked — do not debate at T+0)
 
 Next.js 15 App Router · **plain JavaScript (`.js` / `.jsx`) — no TypeScript** · Tailwind + shadcn/ui · **no database** (in-memory + localStorage) · deploy Vercel.
-Graph: our own SVG force layout (`lib/graph-layout.js`). LLM: **Claude API `claude-opus-5` with structured outputs** (`output_config.format` constrains the model to the contract — no prompt-and-pray JSON). Search: Tavily. Papers: Semantic Scholar (no key). Repos: GitHub REST (no key needed at low volume; a PAT raises the rate limit).
+Graph: our own SVG force layout (`lib/graph-layout.js`). LLM: **Claude API `claude-sonnet-5` with structured outputs** (`output_config.format` constrains the model to the contract — no prompt-and-pray JSON). Search: Tavily. Papers: Semantic Scholar (no key). Repos: GitHub REST (no key needed at low volume; a PAT raises the rate limit).
 
 > **No database.** Auth, persistence, and user accounts are the classic 2-hour time sink that judges never see. One analysis lives in memory + localStorage. That's it.
 
