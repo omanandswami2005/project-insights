@@ -1,5 +1,6 @@
 import TopBar from '@/components/shell/TopBar'
 import Hero from '@/components/landing/Hero'
+import WorkspaceRail from '@/components/intake/WorkspaceRail'
 import {
   Capabilities,
   Footer,
@@ -15,6 +16,7 @@ export default function Home() {
       <TopBar />
       <main>
         <Hero />
+        <WorkspaceRail />
         <KillShot />
         <Outputs />
         <HowItWorks />
