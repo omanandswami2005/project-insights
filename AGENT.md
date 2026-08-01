@@ -106,7 +106,17 @@ NEXT_PUBLIC_USE_FIXTURES=1 pnpm dev   # full app, zero network — the demo safe
 
 Routes: `/` · `/analyze/[id]` · `/analyze/[id]/plan`. **`/analyze/demo` always works**, with or without APIs.
 
-Keys in `.env.local` (see `.env.example`): `ANTHROPIC_API_KEY`, `TAVILY_API_KEY`, optional `GITHUB_TOKEN`, `TELEGRAM_BOT_TOKEN`.
+Keys in `.env.local` (see `.env.example`): `NVIDIA_API_KEY`, `TAVILY_API_KEY`, optional `NVIDIA_MODEL`, `GITHUB_TOKEN`, `TELEGRAM_BOT_TOKEN`, `ANTHROPIC_API_KEY`.
+
+### LLM provider — NVIDIA NIM (primary), Anthropic (standby)
+
+All model calls go through `lib/services/llm.js`. Never import a provider directly — swapping providers must be a change to that one file.
+
+- **Primary: NVIDIA NIM** (`build.nvidia.com`), OpenAI-compatible at `https://integrate.api.nvidia.com/v1`. Plain `fetch`, no extra SDK.
+- **Model: `nvidia/nemotron-3-super-120b-a12b`**, pinned in `.env.local`. Chosen by bake-off against our real cluster schema: **4.7s** vs 24.4s for `nemotron-3-ultra-550b` at equivalent quality. deepseek-v4-pro, glm-5.2, kimi-k2.6 and gpt-oss-120b were unreachable on our key. Leave `NVIDIA_MODEL` blank to auto-detect from `/v1/models`.
+- **Structured output uses `json_schema`, not `guided_json`.** NVIDIA's docs recommend `nvext.guided_json`, and on this model it is actively harmful — it returns a structurally valid object with every string blank and every array empty. `lib/services/nvidia.js` tries `json_schema` → `guided_json` → `json_object` and rejects hollow payloads via `looksEmpty()`. **Parsing successfully is not the same as succeeding** — keep that guard.
+- **Anthropic is standby only** and currently out of credit; the router skips it automatically.
+- Every call can return `null`, and that is a normal outcome — callers fall back to `deriveFallback()` or fixtures. Nothing may crash because a model was unavailable.
 
 ---
 
