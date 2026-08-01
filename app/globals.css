@@ -1,0 +1,112 @@
+@import 'tailwindcss';
+
+/*
+  Design tokens — the single source of truth for colour and type.
+  Spec: docs/UI-SPEC.md §2. Do not hardcode hex values in components.
+
+  The identity rule: machine-produced data renders in mono (scores, counts,
+  URLs, timestamps, stars, dates); human prose renders in sans. That split is
+  the whole visual signature — keep it.
+*/
+@theme {
+  --color-canvas: #0a0a0b;
+  --color-surface: #141416;
+  --color-surface-2: #1b1b1e;
+  --color-line: #232327;
+  --color-line-bright: #3a3a40;
+
+  --color-ink: #ededef;
+  --color-muted: #8a8a93;
+
+  /* Status is the brand. There is deliberately no other accent colour —
+     anything else would compete with the only hues that carry meaning. */
+  --color-verified: #7be04a;
+  --color-stale: #e0a93a;
+  --color-dead: #e5484d;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, 'SF Mono', monospace;
+
+  --radius-card: 8px;
+  --radius-control: 6px;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Headings run tight; body runs open. */
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    line-height: 1.6;
+  }
+
+  ::selection {
+    background: var(--color-verified);
+    color: var(--color-canvas);
+  }
+
+  /* Focus must stay visible on the dark canvas. */
+  :focus-visible {
+    outline: 2px solid var(--color-line-bright);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Status is never colour-only — every badge carries its word and glyph too.
+     Use these three classes everywhere a verify state is shown. */
+  .status-verified {
+    color: var(--color-verified);
+    border-color: var(--color-verified);
+  }
+  .status-stale {
+    color: var(--color-stale);
+    border-color: var(--color-stale);
+  }
+  .status-dead {
+    color: var(--color-dead);
+    border-color: var(--color-dead);
+  }
+  .status-unverified {
+    color: var(--color-muted);
+    border-color: var(--color-line-bright);
+  }
+
+  /* Hairline borders, not shadows. */
+  .panel {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+  }
+
+  /* Any machine-produced number or identifier. */
+  .data {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Print — used by the Wave 2 export brief (F5, required output #11). */
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

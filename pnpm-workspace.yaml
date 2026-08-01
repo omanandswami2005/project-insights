@@ -1,0 +1,3 @@
+# sharp is a transitive dependency of next (image optimisation).
+allowBuilds:
+  sharp: true

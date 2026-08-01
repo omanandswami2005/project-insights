@@ -1,0 +1,94 @@
+﻿iNSIGHTS Track 
+## Problem Statement: AI-Powered Research & Innovation Copilot for Students
+
+
+### Theme
+
+
+**Search Less. Solve More. with iNSIGHTS Layer 2**
+
+
+### Background
+
+
+Every year, millions of students struggle to convert ideas into working projects. They spend hours searching across Google, YouTube, GitHub, research papers, documentation, and forums. Information is scattered, often outdated, duplicated, or unreliable, making it difficult to identify the right approach, validate ideas, and build projects efficiently.
+
+
+The challenge is to create an AI-powered innovation copilot using **iNSIGHTS Layer 2** that helps students move seamlessly from **problem discovery to project execution**.
+
+
+---
+
+
+## Problem Statement
+
+
+Design and develop an **AI-powered Research & Innovation Copilot** that leverages **iNSIGHTS Layer 2** to assist students and developers throughout the entire project lifecycle.
+
+
+The solution should enable users to:
+
+
+* Discover real-world problems worth solving.
+* Perform **DeepSearch** across multiple trusted sources and generate citation-backed research summaries.
+* Analyze existing solutions, identify research gaps, and recommend innovative approaches.
+* Automatically generate a complete project plan using **Project HUB**, including milestones, architecture, technology stack, APIs, timelines, and documentation.
+* Recommend relevant datasets, GitHub repositories, research papers, and learning resources.
+* Collaborate through AI Agents (WhatsApp/Telegram) for reminders, progress tracking, and intelligent assistance.
+* Present all insights through an intuitive dashboard with actionable recommendations.
+
+
+---
+
+
+## Mandatory iNSIGHTS Layer 2 Components
+
+
+Your solution **must** utilize at least **four** of the following Layer 2 capabilities:
+
+
+* 🔍 DeepSearch
+* 🚀 Project HUB
+* 🤖 AI Agents
+* 🌐 Real-time Web Intelligence
+* 📊 Personalized Dashboards
+* 🧠 Knowledge Clustering
+* 📚 Research Workspaces
+* 🌍 Multilingual Support
+
+
+---
+
+
+## Expected Outcome
+
+
+A student should be able to enter a simple idea such as:
+
+
+> "Build an AI solution to reduce food waste in college hostels."
+
+
+Within minutes, the platform should generate:
+
+
+* Problem validation
+* Market and literature research
+* Existing solution comparison
+* Innovation opportunities
+* Project architecture
+* Development roadmap
+* Recommended tech stack
+* GitHub repositories
+* APIs and datasets
+* Implementation timeline
+* Presentation-ready documentation
+
+
+---
+
+
+## Success Criteria
+
+
+The winning solution should significantly reduce the time required to transform an idea into an implementation-ready project while ensuring the recommendations are **accurate, verifiable, scalable, and actionable** using the capabilities of **iNSIGHTS Layer 2**.
