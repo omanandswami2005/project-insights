@@ -269,7 +269,7 @@ export {}
 - [x] B-2 **F5 — Export brief** `app/analyze/[id]/brief/page.jsx`: problem validation → research → comparison → architecture → roadmap → stack → resources, in one printable document. Print styles already exist (`.no-print`, `@media print`). **Required output #11.** (b0907b0)
 - [x] B-3 **F4 — `app/api/translate/route.js`** + wire the language toggle into `TopBar`. Claude translates human-readable fields to `hi`/`mr`. **Leave URLs, repo names and all mono data untranslated.** (ebc3b7a) — 🌍 Multilingual
 - [x] B-4 **F7 — `lib/history.js` + workspace rail** on the landing page: localStorage list of past analyses. **Two Layer 2 components for ~12 minutes, and it's what makes 📊 Personalized Dashboards defensible at all.** (f36e729) — 📚 Research Workspaces + 📊 Personalized Dashboards
-- [ ] B-5 **F8 — Problem Radar (R1)** `components/intake/ProblemRadar.jsx`: an "I don't have an idea yet" path showing 6 ranked real-world problems. **The brief's first-listed capability, and the only one still uncovered.** Fixture-backed, refreshed by one live search. — *~22 min*
+- [x] B-5 **F8 — Problem Radar (R1)** `components/intake/ProblemRadar.jsx`: an "I don't have an idea yet" path showing 6 ranked real-world problems. **The brief's first-listed capability, and the only one still uncovered.** Fixture-backed, refreshed by one live search. (ff4cac0)
 
 *≈ 94 min. **Drop B-5 first if behind, then B-4.***
 
