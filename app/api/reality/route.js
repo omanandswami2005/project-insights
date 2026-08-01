@@ -48,7 +48,15 @@ export async function POST(request) {
     // Persist so the export brief and a page refresh see the same plan.
     if (id && id !== 'demo') patch(id, { reality, architecture })
 
-    return NextResponse.json(reality, { headers: { 'Cache-Control': 'no-store' } })
+    // Architecture ships in this response, not just in the store. The plan
+    // screen fetched the analysis *before* this call, so on a live run its
+    // copy has no architecture yet — returning it here is what makes the
+    // diagram appear. (CLAUDE.md documents this route as RealityCheck +
+    // Architecture for exactly this reason.)
+    return NextResponse.json(
+      { ...reality, architecture },
+      { headers: { 'Cache-Control': 'no-store' } }
+    )
   } catch (err) {
     console.error('[reality] failed:', err?.message || err)
     // The plan screen falls back to fixtures on a non-ok response, so a 500
