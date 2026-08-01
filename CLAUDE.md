@@ -62,18 +62,19 @@ The brief's only pass/fail rule: *"must utilize at least **four**"* Layer 2 comp
 
 **Folder ownership is the lock.** With 3 people and no time, it beats git branching ceremony.
 
-| Lane | Owns exclusively |
-|---|---|
-| **A — Pipeline** | `lib/services/**`, `app/api/analyze/**` |
-| **B — Agents & discovery** | `lib/bot/**`, `app/api/bot/**`, `app/api/translate/**`, `lib/history.js`, `components/intake/**` |
-| **C — Plan & docs** | `app/api/reality/**`, `app/analyze/[id]/brief/**`, `components/plan/**` |
+**Two people, two lanes.**
+
+| Lane | Who | Owns exclusively |
+|---|---|---|
+| **A — Brain** | Omanand | `lib/services/**`, `app/api/analyze/**`, `app/api/reality/**` |
+| **B — Reach** | Friend | `lib/bot/**`, `app/api/bot/**`, `app/api/translate/**`, `lib/history.js`, `components/intake/**`, `app/analyze/[id]/brief/**` |
 
 - 🔒 **Frozen — announce before editing:** `lib/types.js`, `lib/fixtures.js`, `app/globals.css`, `app/layout.jsx`.
-- **Shared, touch with care:** `components/shell/TopBar.jsx`, `app/page.jsx`, `app/analyze/[id]/page.jsx`. Commit immediately after.
+- **Shared, touch with care:** `components/shell/TopBar.jsx` (B adds the language toggle), `app/page.jsx` (B adds the workspace rail + Problem Radar entry). Commit immediately after.
 - Everything else under `components/` is built and stable — **read it, don't rewrite it.**
 - Commit every ~15 min. Pull before push. `<type>: <item-id> <summary>`.
 - Mark your checklist item `[x]` with the commit hash. Completion is a hash, not an opinion.
-- **Standup at T+35.**
+- **Standup at T+45.**
 
 ---
 
