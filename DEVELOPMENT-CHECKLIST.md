@@ -66,7 +66,7 @@ GitHub repo scaffolding & issue creation (E6 full) · adaptive re-planning · Co
 ## Stack (locked — do not debate at T+0)
 
 Next.js 15 App Router · **plain JavaScript (`.js` / `.jsx`) — no TypeScript** · Tailwind + shadcn/ui · **no database** (in-memory + localStorage) · deploy Vercel.
-Graph: `react-force-graph-2d` or `reactflow`. LLM: Claude API (`claude-sonnet-5`). Search: Tavily. Papers: Semantic Scholar (no key). Repos: GitHub REST (no key needed at low volume; a PAT raises the rate limit).
+Graph: our own SVG force layout (`lib/graph-layout.js`). LLM: **Claude API `claude-opus-5` with structured outputs** (`output_config.format` constrains the model to the contract — no prompt-and-pray JSON). Search: Tavily. Papers: Semantic Scholar (no key). Repos: GitHub REST (no key needed at low volume; a PAT raises the rate limit).
 
 > **No database.** Auth, persistence, and user accounts are the classic 2-hour time sink that judges never see. One analysis lives in memory + localStorage. That's it.
 
@@ -74,9 +74,9 @@ Graph: `react-force-graph-2d` or `reactflow`. LLM: Claude API (`claude-sonnet-5`
 
 ## 🚨 PRE-FLIGHT (T−10, do before the clock starts)
 
-- [ ] P-1 Get API keys into `.env.local`: `ANTHROPIC_API_KEY`, `TAVILY_API_KEY`, `GITHUB_TOKEN` (optional). **If keys aren't ready, the whole build is fixture-only — decide now, not at T+60.**
-- [ ] P-2 All three: `git clone`, `pnpm install`, confirm `pnpm dev` runs.
-- [ ] P-3 Agree who is A, B, C. Write it here: **A = ____ · B = ____ · C = ____**
+- [x] P-1 `TAVILY_API_KEY` in `.env.local` ✅ — **live search verified working** (22 real sources on the demo idea). `ANTHROPIC_API_KEY` still pending: without it, clustering and planning fall back to fixtures and everything still renders. `GITHUB_TOKEN` optional.
+- [ ] P-2 Both: `git pull`, `pnpm install`, confirm `pnpm dev` runs and `/`, `/analyze/demo`, `/analyze/demo/plan` all render.
+- [x] P-3 Lanes assigned: **A = Omanand (Brain) · B = Friend (Reach)** ✅
 
 ---
 
@@ -252,11 +252,11 @@ export {}
 
 *The pipeline and the planner. Every item is "call Claude, get contract-shaped JSON back, never crash." This is the product's whole claim.*
 
-- [ ] A-1 `lib/services/deepsearch.js` — Tavily web search + Semantic Scholar papers, in parallel, normalised into `Evidence[]`. **+F6: also search learning resources** → `sourceType: 'learning'`. Required by R5. — *~18 min* — 🔍 DeepSearch
-- [ ] A-2 **`lib/services/verify.js` — THE KILL SHOT.** Repo URLs → GitHub REST for stars, `pushed_at`, `archived`, license → set `verify` + `verifyNote` + `checkedAt`. Datasets/APIs → `HEAD` for liveness. All checks via `Promise.allSettled` — **a rate-limit downgrades to `'unverified'`, never throws.** The UI already renders every one of these states. — *~20 min* — 🌐 Web Intelligence
-- [ ] A-3 `lib/services/cluster.js` — one Claude call: evidence → clusters + saturation + white space + graph nodes/edges **+ `Comparison[]` (F2)**. Force JSON matching the contract exactly. Prompt it to **show its scoring reasoning** in `verdict` — competitors' ranking logic is opaque, ours isn't. — *~25 min* — 🧠 Knowledge Clustering
-- [ ] A-4 `app/api/analyze/route.js` + `app/api/analyze/[id]/route.js` — in-memory `Map`, run the pipeline async, update `progress[]` after each stage. **The live view already polls this every 800ms** — just honour the contract. — *~12 min*
-- [ ] A-5 **`app/api/reality/route.js`** — one Claude call: idea + evidence + team constraints → `RealityCheck` **+ `Architecture` (F3)** (Mermaid `flowchart TD` + component/role/tech list). Prompt must **cut aggressively** and always emit a 48-hour Milestone 0. The plan screen already renders all of it. — *~20 min* — 🚀 Project HUB
+- [x] A-1 ✅ `lib/services/deepsearch.js` — Tavily web search + Semantic Scholar papers, in parallel, normalised into `Evidence[]`. **+F6: also search learning resources** → `sourceType: 'learning'`. Required by R5. — *~18 min* — 🔍 DeepSearch
+- [x] A-2 ✅ **`lib/services/verify.js` — THE KILL SHOT.** Repo URLs → GitHub REST for stars, `pushed_at`, `archived`, license → set `verify` + `verifyNote` + `checkedAt`. Datasets/APIs → `HEAD` for liveness. All checks via `Promise.allSettled` — **a rate-limit downgrades to `'unverified'`, never throws.** The UI already renders every one of these states. — *~20 min* — 🌐 Web Intelligence
+- [x] A-3 ✅ `lib/services/cluster.js` — one Claude call: evidence → clusters + saturation + white space + graph nodes/edges **+ `Comparison[]` (F2)**. Force JSON matching the contract exactly. Prompt it to **show its scoring reasoning** in `verdict` — competitors' ranking logic is opaque, ours isn't. — *~25 min* — 🧠 Knowledge Clustering
+- [x] A-4 ✅ `app/api/analyze/route.js` + `app/api/analyze/[id]/route.js` — in-memory `Map`, run the pipeline async, update `progress[]` after each stage. **The live view already polls this every 800ms** — just honour the contract. — *~12 min*
+- [x] A-5 ✅ **`app/api/reality/route.js`** — one Claude call: idea + evidence + team constraints → `RealityCheck` **+ `Architecture` (F3)** (Mermaid `flowchart TD` + component/role/tech list). Prompt must **cut aggressively** and always emit a 48-hour Milestone 0. The plan screen already renders all of it. — *~20 min* — 🚀 Project HUB
 - [ ] A-6 Cache verification results; **pre-warm the demo idea at server start** so the stage demo never waits on the network. — *~5 min*
 
 *≈ 100 min. Critical path — do not add to this lane.*
@@ -332,6 +332,7 @@ T+110 ───── D: rehearse ───────────────�
 
 Format: `HH:MM · <hash> · <type> · <summary> · <who>`
 
+- `2026-08-01 · —  · feat · Lane A shipped — deepsearch (Tavily+S2), live verification (GitHub REST + HEAD), clustering + comparisons, analyze routes, reality+architecture route. Live run: 22 sources, 2 dead / 3 stale caught. · Omanand`
 - `2026-08-01 · —  · feat · design handoff implemented — all 4 routes built from fixtures (landing, live, results, plan) + light/dark theme. Lanes re-cut: A=pipeline, B=agents/i18n/discovery, C=plan/docs/QA. · Claude`
 - `2026-08-01 · —  · docs · requirements audit — added F1-F7 to close 3 missing required outputs, 2 missing capabilities, and raise Layer-2 coverage 4→7. Lanes rebalanced. · Claude`
 - `2026-08-01 · —  · docs · checklist created, scope reduced to 4 features + 5 Layer-2 components · Claude`
