@@ -76,18 +76,18 @@ export default function ProblemRadar() {
 
   return (
     <section className="mx-auto max-w-[900px] px-6 py-12 sm:px-8 border-t border-line">
-      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 mb-6">
-        <div>
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
+        <div className="max-w-[400px]">
           <p className="eyebrow">capability R1 · problem radar</p>
-          <h2 className="text-[20px] font-bold tracking-tight">
+          <h2 className="text-[20px] font-bold tracking-tight mt-1">
             Don&apos;t have an idea yet? Explore Problem Radar
           </h2>
-          <p className="text-[13px] text-muted mt-1">
+          <p className="text-[13px] text-muted mt-2">
             Curated real-world campus & industry problems with live verified white-space opportunities.
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-1.5 shrink-0">
+        <div className="flex flex-wrap gap-1.5 md:justify-end md:max-w-[450px]">
           {domains.map((d) => (
             <button
               key={d}
