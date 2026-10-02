@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useEffect, useMemo, useState } from 'react'
+import { use, useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import TopBar from '@/components/shell/TopBar'
 import LiveAnalysis from '@/components/analyze/LiveAnalysis'
@@ -88,7 +88,56 @@ export default function AnalyzePage({ params }) {
     }
   }, [id, fixtureMode, ideaParam])
 
-  const analysis = fixtureMode ? replay : live
+  const baseAnalysis = fixtureMode ? replay : live
+  const [targetLang, setTargetLang] = useState('en')
+  const [translatedAnalysis, setTranslatedAnalysis] = useState(null)
+
+  const handleLanguageChange = useCallback((newLang) => {
+    setTargetLang(newLang)
+  }, [])
+
+  useEffect(() => {
+    if (!baseAnalysis || baseAnalysis.status !== 'done') return
+    if (targetLang === 'en') {
+      setTranslatedAnalysis(null)
+      return
+    }
+
+    if (
+      translatedAnalysis &&
+      translatedAnalysis.language === targetLang &&
+      translatedAnalysis.id === baseAnalysis.id
+    ) {
+      return
+    }
+
+    let stop = false
+    async function translate() {
+      try {
+        const res = await fetch('/api/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ targetLang, analysis: baseAnalysis }),
+        })
+        const data = await res.json()
+        if (!stop && data.analysis) {
+          setTranslatedAnalysis(data.analysis)
+        }
+      } catch (err) {
+        console.error('Translation failed:', err)
+      }
+    }
+    translate()
+    return () => {
+      stop = true
+    }
+  }, [baseAnalysis, targetLang, translatedAnalysis])
+
+  const analysis =
+    translatedAnalysis && translatedAnalysis.language === targetLang
+      ? translatedAnalysis
+      : baseAnalysis
+
   const [selectedId, setSelectedId] = useState(null)
 
   const selectedNode = useMemo(
@@ -111,7 +160,7 @@ export default function AnalyzePage({ params }) {
 
   return (
     <>
-      <TopBar recap={analysis.idea} />
+      <TopBar recap={analysis.idea} onLanguageChange={handleLanguageChange} />
 
       {!done ? (
         <LiveAnalysis analysis={analysis} />
@@ -142,3 +191,4 @@ export default function AnalyzePage({ params }) {
     </>
   )
 }
+

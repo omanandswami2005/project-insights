@@ -12,7 +12,10 @@ export default function TopBar({ recap, onLanguageChange }) {
     setTheme(document.documentElement.dataset.theme || 'dark')
     const savedLang = localStorage.getItem('lang') || 'en'
     setLang(savedLang)
-  }, [])
+    if (savedLang !== 'en' && onLanguageChange) {
+      onLanguageChange(savedLang)
+    }
+  }, [onLanguageChange])
 
   function toggleTheme() {
     const next = theme === 'dark' ? 'light' : 'dark'
